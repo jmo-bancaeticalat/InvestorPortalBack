@@ -1,0 +1,159 @@
+paths:
+  /postDocuments:
+    post:
+      summary: Upload a document
+      tags:
+        - Document
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+                id_investment_account_natural:
+                  type: integer
+                description:
+                  type: string
+                id_document_type:
+                  type: integer
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Document'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+
+  /getDocumentByName:
+    get:
+      summary: Get document by name
+      tags:
+        - Document
+      parameters:
+        - name: documentName
+          in: query
+          required: true
+          schema:
+            type: string
+          description: Name of the document to retrieve
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Document'
+        '404':
+          description: Document not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        '500':
+          description: Server Error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+
+  /putDocument:
+    put:
+      summary: Update documents depending on id_images_documents
+      tags:
+        - Document
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                id_images_documents:
+                  type: string
+                file:
+                  type: string
+                  format: binary
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ImagesDocument'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+
+components:
+  schemas:
+    Document:
+      type: object
+      properties:
+        id:
+          type: integer
+        img_id:
+          type: number
+        id_investment_account_natural:
+          type: integer
+        img_link:
+          type: string
+        img_name:
+          type: string
+        img_description:
+          type: string
+        id_document_type:
+          type: integer
+        img_data:
+          type: string

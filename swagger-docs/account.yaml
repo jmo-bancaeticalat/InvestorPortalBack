@@ -1,0 +1,404 @@
+paths:
+  /getTaxResidency:
+    get:
+      summary: Get tax residency by account ID
+      tags:
+        - Tax Residency
+      parameters:
+        - name: accountId
+          in: query
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CountryTaxResidency'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /postTaxResidency:
+    post:
+      summary: Create a new tax residency
+      tags:
+        - Tax Residency
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TaxResidencyInput'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CountryTaxResidency'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /postPEP:
+    post:
+      summary: Create a new politically exposed person (PEP) record
+      tags:
+        - PEP
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PEPInput'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PEP'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /putIfPEP:
+    put:
+      summary: Update politically exposed person (PEP) status
+      tags:
+        - PEP
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PEPStatusInput'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InvestmentAccountNatural'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /putIfAML:
+    put:
+      summary: Update anti-money laundering (AML) status
+      tags:
+        - AML
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AMLStatusInput'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InvestmentAccountNatural'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /putQualifiedInvestor:
+    put:
+      summary: Update qualified investor status
+      tags:
+        - Qualified Investor
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QualifiedInvestorStatusInput'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InvestmentAccountNatural'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /getInvestmentAccountLegal:
+    get:
+      summary: Get investment account information for legal persons
+      tags:
+        - Investment Account
+      parameters:
+        - name: id_investment_account_legal
+          in: query
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InvestmentAccountLegal'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /postInvestmentAccountLegal:
+    post:
+      summary: Create a new investment account for legal persons
+      tags:
+        - Investment Account
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LegalPersonInput'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: boolean
+                  createdInvestmentAccountLegal:
+                    $ref: '#/components/schemas/InvestmentAccountLegal'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /postInvestmentAccountNatural:
+    post:
+      summary: Create a new investment account for natural persons
+      tags:
+        - Investment Account
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NaturalPersonInput'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: boolean
+                  createdInvestmentAccountNatural:
+                    $ref: '#/components/schemas/InvestmentAccountNatural'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /getInvestmentAccountNaturalPostgres:
+    get:
+      summary: Get investment account information for natural persons from PostgreSQL
+      tags:
+        - Investment Account
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/InvestmentAccountNatural'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+components:
+  schemas:
+    CountryTaxResidency:
+      type: object
+      properties:
+        id: 
+          type: integer
+    TaxResidencyInput:
+      type: object
+      properties:
+        countryId:
+          type: integer
+        accountId:
+          type: integer
+    PEP:
+      type: object
+      properties:
+        id: 
+          type: integer
+    PEPInput:
+      type: object
+      properties:
+        id_investment_account_natural:
+          type: integer
+        position_held:
+          type: string
+        pep_relationship:
+          type: string
+        name_pep:
+          type: string
+        id_country:
+          type: integer
+    PEPStatusInput:
+      type: object
+      properties:
+        id_investment_account_natural:
+          type: integer
+        if_pep:
+          type: boolean
+    AMLStatusInput:
+      type: object
+      properties:
+        id_investment_account_natural:
+          type: integer
+        if_AML:
+          type: boolean
+    QualifiedInvestorStatusInput:
+      type: object
+      properties:
+        id_investment_account_natural:
+          type: integer
+        if_qualified_investor:
+          type: boolean
+    InvestmentAccountLegal:
+      type: object
+      properties:
+        id: 
+          type: integer
+    LegalPersonInput:
+      type: object
+      properties:
+        id_legal_person:
+          type: integer
+    InvestmentAccountNatural:
+      type: object
+      properties:
+        id: 
+          type: integer
+    NaturalPersonInput:
+      type: object
+      properties:
+        id_natural_person:
+          type: integer
+        identifier_national_number:
+          type: string
+        identifier_tax_number:
+          type: string
+        id_country_account:
+          type: integer
+        id_educational_level:
+          type: integer
+        passaport:
+          type: string
+        id_occupation:
+          type: integer
+        id_income_range:
+          type: integer
+        if_qualified_investor:
+          type: boolean
+        if_pep:
+          type: boolean
+        id_pep:
+          type: integer
+        id_risk_profile:
+          type: integer
+        if_CRS:
+          type: boolean

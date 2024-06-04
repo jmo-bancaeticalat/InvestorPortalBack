@@ -1,0 +1,378 @@
+paths:
+
+  /postRiskProfileForAccount:
+    post:
+      summary: Create risk profile for an account
+      tags:
+        - Risk Profile
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id_investment_account_natural:
+                  type: number
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: boolean
+                  createdRiskProfile:
+                    $ref: '#/components/schemas/RiskProfile'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+        '422':
+          description: Unprocessable Entity
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+
+  /getRiskProfile:
+    get:
+      summary: Get risk profiles for a specified account
+      tags:
+        - Risk Profile
+      parameters:
+        - name: id_investment_account_natural
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/RiskProfile'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+
+  /UpdateRiskProfileScale:
+    post:
+      summary: Update risk profile manually
+      tags:
+        - Risk Profile
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id_investment_account_natural:
+                  type: number
+                id_scales:
+                  type: number
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  updatedRiskProfile:
+                    $ref: '#/components/schemas/RiskProfile'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+
+  /getScales:
+    get:
+      summary: Get scales
+      tags:
+        - Scales
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  scales:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Scale'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+
+  /postRiskProfileQuestionSelection:
+    post:
+      summary: Create risk profile question selection
+      tags:
+        - Risk Profile
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id_investment_account_natural:
+                  type: number
+                id_responses_risk_profile:
+                  type: number
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: boolean
+                  createdRiskProfileQuestionSelection:
+                    $ref: '#/components/schemas/RiskProfileQuestionSelection'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+
+  /getRiskProfileQuestionSelection:
+    get:
+      summary: Get risk profile question selections
+      tags:
+        - Risk Profile
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/RiskProfileQuestionSelection'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+
+  /getAnswersRiskQuestions:
+    get:
+      summary: Get answers to risk profile questions
+      tags:
+        - Risk Profile
+      parameters:
+        - name: id_country
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/RiskProfileAnswer'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+
+  /getRiskProfileQuestions:
+    get:
+      summary: Get risk profile questions
+      tags:
+        - Risk Profile
+      parameters:
+        - name: id_country
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/RiskProfileQuestion'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    
+components:
+  schemas:
+    Scale:
+      type: object
+      properties:
+        id:
+          type: number
+        name:
+          type: string
+    PostRiskProfileQuestionSelection:
+      type: object
+      properties:
+        id_risk_profile_question_selection:
+          type: number
+        id_investment_account_natural:
+          type: number
+        id_responses_risk_profile:
+          type: number
+
+    GetRiskProfileQuestionSelection:
+      type: object
+      properties:
+        id_risk_profile_question_selection:
+          type: number
+        id_investment_account_natural:
+          type: number
+        id_responses_risk_profile:
+          $ref: '#/components/schemas/RiskProfileAnswer'
+    RiskProfileAnswer:
+      type: object
+      properties:
+        id:
+          type: number
+        answer:
+          type: string
+    RiskProfileQuestion:
+      type: object
+      properties:
+        id:
+          type: number
+        question:
+          type: string

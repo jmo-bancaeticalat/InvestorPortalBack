@@ -1,0 +1,217 @@
+paths:
+  /getPersons:
+    get:
+      summary: Get persons
+      tags:
+        - Person
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Person'
+  /login:
+    post:
+      summary: User login
+      tags:
+        - Person
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+      responses:
+        '200':
+          description: OK
+  /bringPerson:
+    post:
+      summary: Get user by email
+      tags:
+        - Person
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+      responses:
+        '200':
+          description: OK
+  /registerPerson:
+    post:
+      summary: Register new person
+      tags:
+        - Person
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Person'
+      responses:
+        '200':
+          description: OK
+  /UpdateNamePerson/{id}/updateName:
+    put:
+      summary: Update name of person by Id
+      tags:
+        - Person
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: name
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+components:
+  schemas:
+    Person:
+      type: object
+      properties:
+        idCountry:
+          type: string
+        legalPerson:
+          type: boolean
+        idTypePerson:
+          type: string
+        name:
+          type: string
+          minLength: 1
+        lastname:
+          type: string
+        dni:
+          type: string
+        phone:
+          type: string
+        email:
+          type: string
+          format: email
+        idContactChannel:
+          type: string
+        termsCondition:
+          type: boolean
+        dataPolicyCheck:
+          type: boolean
+        dniPictureFront:
+          type: object
+          properties:
+            filename:
+              type: string
+            contentType:
+              type: string
+            uploadDate:
+              type: string
+              format: date-time
+        dniPictureBack:
+          type: string
+        idMaritalStatus:
+          type: number
+        idLaboralActivity:
+          type: string
+        professionoroccupation:
+          type: string
+        idEducationLevel:
+          type: string
+        idIncomeRange:
+          type: string
+        idCity:
+          type: string
+        address:
+          type: string
+        idAgeRange:
+          type: string
+        pepCheck:
+          type: boolean
+        amlCheck:
+          type: boolean
+        idImpactProfile:
+          type: number
+        idUser:
+          type: number
+        politicallyExposedPerson:
+          type: boolean
+        taxResidence:
+          type: boolean
+        usaCitizen:
+          type: boolean
+        qualifiedInvestor:
+          type: boolean
+        password:
+          type: string
+        repassword:
+          type: string
+        management:
+          type: string
+        area:
+          type: string
+        investorProfile:
+          type: string
+        investOffer:
+          type: string
+        comments:
+          type: string
+        birthday:
+          type: string
+          format: date
+        registrationDate:
+          type: string
+          format: date-time
+        updateDate:
+          type: string
+          format: date-time
+        registrationCode1:
+          type: number
+        registrationCode2:
+          type: number
+        registrationCode3:
+          type: number
+        registrationCode4:
+          type: number
+        inversorprofile:
+          type: string
+        responsibleexecutive:
+          type: string
+        inversorstate:
+          type: string
+        stateofprocess:
+          type: string
+        result:
+          type: string
+        done:
+          type: boolean
+          default: false
+    User:
+      type: object
+      properties:
+        id_user:
+          type: number
+        email:
+          type: string
+        password:
+          type: string
+        registration_date:
+          type: date
+        terms_and_conditions:
+          type: boolean
+        id_profile:
+          type: number
+

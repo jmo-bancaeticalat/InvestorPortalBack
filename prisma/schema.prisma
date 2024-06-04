@@ -1,0 +1,504 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// TODO: AÑADIR RELACION IMAGES_DOCUMENTS CON INVESTMENT ACCOUNT LEGAL
+// TODO: Añadir llaves foraneas (FK) a Investment_Account_Legal
+
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      =  env("DATABASE_URL")
+}
+
+model User {
+  id_user                Int              @id @default(autoincrement())
+  email                String           @unique
+  password             String
+  registration_date    DateTime
+  terms_and_conditions Boolean
+  id_profile           Int //FK
+  profile              Profile          @relation(fields: [id_profile], references: [id_profile]) //FK
+
+  natural_person       Natural_Person[]
+}
+
+model Country {
+  id_country                     Int              @id @default(autoincrement())
+  name                       String
+  demonym                    String
+
+  natural_person_residence   Natural_Person[] @relation("Residence")
+  natural_person_nationality Natural_Person[] @relation("Nationality")
+  Risk_Profile_Questions Risk_Profile_Questions[]
+  Civil_Status Civil_Status[]
+  Investment_Account_Natural Investment_Account_Natural[]
+  Educational_Level Educational_Level[]
+  Occupation Occupation[]
+  Income_Range Income_Range[]
+  Qualified_Investor Qualified_Investor[]
+  PEP PEP[]
+  Bank_Branch Bank_Branch[]
+  Country_Tax_Residence Country_Tax_Residence[]
+}
+
+model Google_Maps {
+  id_google_maps Int @id @default(autoincrement())
+  street_number Int
+  route String
+  locality String
+  administrative_area String
+  country String
+  formatted_address String
+  latitude Float
+  length Float
+
+  Relationship_Google_Maps_Account_Natural Relationship_Google_Maps_Account_Natural[]
+}
+
+model Relationship_Google_Maps_Account_Natural {
+  id_relationship_google_maps_account_natural Int @id
+  id_google_maps Int //FK
+  google_maps Google_Maps @relation(fields: [id_google_maps], references: [id_google_maps])
+  id_investment_account_natural Int // FK
+  investment_account_natural Investment_Account_Natural @relation(fields: [id_investment_account_natural], references: [id_investment_account_natural])
+}
+
+model Profile {
+  id_profile          Int    @id @default(autoincrement())
+  name        String
+  description String
+
+  user        User[]
+  Relationship_Profile_Permissions Relationship_Profile_Permissions[]
+}
+
+model Relationship_Profile_Permissions {
+  id_relationship_profile_permissions Int @id
+  id_profile Int //FK
+  profile              Profile          @relation(fields: [id_profile], references: [id_profile])
+  id_permissions Int //FK
+  permissions Permissions @relation(fields: [id_permissions], references: [id_permissions])
+}
+
+model Permissions {
+  id_permissions Int @id 
+  permissions String
+
+  Relationship_Profile_Permissions Relationship_Profile_Permissions[]
+}
+
+
+model Natural_Person {
+  id_natural_person          Int       @id @default(autoincrement())
+  name        String
+  lastname    String
+  cell_phone  String?
+  birthday    DateTime?
+  usa_citizen Boolean?
+  id_user Int // FK
+  user    User @relation(fields: [id_user], references: [id_user])
+  id_country_residence Int // FK
+  country_residence    Country @relation(name: "Residence", fields: [id_country_residence], references: [id_country])
+  id_country_nationality Int // FK
+  country_nationality    Country @relation(name: "Nationality", fields: [id_country_nationality], references: [id_country])
+  id_gender Int // FK
+  gender Gender @relation(fields: [id_gender], references: [id_gender])
+  id_civil_status Int // FK
+  civil_status Civil_Status @relation(fields: [id_civil_status], references: [id_civil_status])
+
+  Investment_Account_Natural Investment_Account_Natural[]
+  Relationship_Natural_Legal Relationship_Natural_Legal[]
+}
+
+model Gender {
+  id_gender Int @id
+  gender_option String 
+
+  Natural_Person Natural_Person[]
+}
+
+model Civil_Status {
+  id_civil_status Int @id
+  status String
+  id_country Int // FK
+  country Country @relation(fields: [id_country], references: [id_country])
+
+  Natural_Person Natural_Person[]
+}
+
+model Relationship_Natural_Legal {
+  id_relationship_natural_legal Int @id @default(autoincrement())
+  id_natural_person Int // FK
+  natural_person Natural_Person @relation(fields: [id_natural_person], references: [id_natural_person])
+  id_legal_person Int // FK
+  legal_person Legal_Person @relation(fields: [id_legal_person], references: [id_legal_person])
+}
+
+model Legal_Person {
+  id_legal_person Int @id @default(autoincrement())
+  company_creation_date DateTime?
+
+  Relationship_Natural_Legal Relationship_Natural_Legal[]
+  Investment_Account_Legal Investment_Account_Legal[]
+}
+
+
+model Investment_Account_Natural {
+  id_investment_account_natural                    Int    @id @default(autoincrement())
+  identifier_national_number String
+  identifier_tax_number      String?
+  id_natural_person              Int // FK
+  natural_person Natural_Person @relation(fields: [id_natural_person], references: [id_natural_person])
+  id_country_account             Int // FK
+  country_account Country @relation(fields: [id_country_account], references: [id_country])
+  id_educational_level           Int // FK
+  educational_level Educational_Level @relation(fields: [id_educational_level], references: [id_educational_level])
+  passaport                   String? // FK
+  id_occupation                   Int // FK
+  occupation Occupation @relation(fields: [id_occupation], references: [id_occupation])
+  id_income_range                Int // FK
+  income_range Income_Range @relation(fields: [id_income_range], references: [id_income_range])
+  if_qualified_investor Boolean? // FK
+  if_pep Boolean?
+  id_pep Int // FK
+  pep PEP @relation(fields: [id_pep], references: [id_pep])
+  if_CRS Boolean?
+  if_AML Boolean?
+
+  Relationship_Google_Maps_Account_Natural Relationship_Google_Maps_Account_Natural[]
+  Images_Documents Images_Documents[]
+  Relationship_CRS_Account_Natural Relationship_CRS_Account_Natural[]
+  Risk_Profile_Question_Selection Risk_Profile_Question_Selection[]
+  Proof_Bank_Data Proof_Bank_Data[]
+  Risk_Profile Risk_Profile[]
+  Country_Tax_Residence Country_Tax_Residence[]
+}
+
+
+//! Falta por agregar FK y sacar el opcional ? en los FK
+model Investment_Account_Legal {
+  id_investment_account_legal Int @id @default(autoincrement())
+  id_legal_person Int // FK
+  legal_person Legal_Person @relation(fields: [id_legal_person], references: [id_legal_person])
+  identifier_national_number String?
+  business_name String?
+  fantasy_name String?
+  date_of_powers DateTime?
+  cell_phone String?
+  id_country_account Int? // FK
+  id_google_maps_address Int? // FK
+  id_resource_origin Int? // FK
+  if_relationship_administration Boolean?
+  id_relationship_administration Int? // FK
+  id_guarantee Int? // FK
+  if_fatca Boolean?
+  id_fatca Int? // FK
+  if_crs Boolean?
+  id_crs Int? // FK
+  if_pep Boolean?
+  id_pep Int? // FK
+  id_proof_bank_data Int? // FK
+  id_risk_profile Int? // FK
+}
+
+
+model Country_Tax_Residence {
+  id_country_tax_residence Int @id @default(autoincrement())
+  id_investment_account_natural Int//FK
+  investment_account_natural Investment_Account_Natural @relation(fields: [id_investment_account_natural], references: [id_investment_account_natural])
+  id_country Int //FK
+  country Country @relation(fields: [id_country], references: [id_country])
+}
+
+
+model Educational_Level {
+  id_educational_level Int @id
+  level String
+  id_country Int // FK
+  country Country @relation(fields: [id_country], references: [id_country])
+
+  Investment_Account_Natural Investment_Account_Natural[]
+}
+
+
+
+model Occupation {
+  id_occupation Int @id
+  occupation_name String
+  id_country Int
+  country Country @relation(fields: [id_country], references: [id_country])
+
+  Investment_Account_Natural Investment_Account_Natural[]
+}
+
+model Income_Range {
+  id_income_range Int @id
+  income_range String
+  id_country Int // FK
+  country Country @relation(fields: [id_country], references: [id_country])
+
+  Investment_Account_Natural Investment_Account_Natural[]
+}
+
+
+
+model Qualified_Investor {
+  id_qualified_investor Int @id
+  definition String
+  id_country Int // FK
+  country Country @relation(fields: [id_country], references: [id_country])
+
+}
+
+model PEP {
+  id_pep Int @id @default(autoincrement())
+  position_held String?
+  pep_relationship String?
+  name_pep String?
+  id_country Int // FK
+  country Country @relation(fields: [id_country], references: [id_country])
+
+  Investment_Account_Natural Investment_Account_Natural[]
+}
+
+model Proof_Bank_Data {
+  id_proof_bank_data Int @id
+  id_investment_account_natural Int //FK
+  investment_account_natural Investment_Account_Natural @relation(fields: [id_investment_account_natural], references: [id_investment_account_natural])
+  id_bank_branch Int // FK
+  bank_branch Bank_Branch @relation(fields: [id_bank_branch], references: [id_bank_branch])
+  name_bank String?
+  account_type String?
+  account_number String?
+
+}
+
+model Bank_Branch {
+  id_bank_branch Int @id
+  name String
+  id_country Int// FK
+  country Country @relation(fields: [id_country], references: [id_country])
+
+  Proof_Bank_Data Proof_Bank_Data[]
+}
+
+model Risk_Profile {
+  id_risk_profile Int @id @default(autoincrement())
+  total_score Int
+  id_scales   Int // FK
+  scale Scales @relation(fields: [id_scales], references: [id_scales])
+  id_investment_account_natural Int
+  investment_account_natural Investment_Account_Natural @relation(fields: [id_investment_account_natural], references: [id_investment_account_natural])
+
+}
+
+model Scales {
+  id_scales           Int    @id
+  profile_name String
+  description String
+  min_value    Int
+  max_value    Int
+
+  Risk_Profile Risk_Profile[]
+}
+
+model Risk_Profile_Question_Selection {
+  id_risk_profile_question_selection Int @id @default(autoincrement())
+  id_investment_account_natural Int //FK
+  investment_account_natural Investment_Account_Natural @relation(fields: [id_investment_account_natural], references: [id_investment_account_natural])
+  id_responses_risk_profile Int // FK 
+  responses_risk_profile Responses_Risk_Profile @relation(fields: [id_responses_risk_profile], references: [id_responses_risk_profile])
+  
+}
+
+model Responses_Risk_Profile {
+  id_responses_risk_profile Int @id @default(autoincrement())
+  answer                    String
+  associated_response_score Int
+  id_risk_profile_questions Int // FK
+  risk_profile_questions Risk_Profile_Questions @relation(fields: [id_risk_profile_questions], references: [id_risk_profile_questions])
+
+  Risk_Profile_Question_Selection Risk_Profile_Question_Selection[]
+}
+
+model Risk_Profile_Questions {
+  id_risk_profile_questions        Int    @id 
+  question   String
+  id_country Int // FK 
+  country Country @relation(fields: [id_country], references: [id_country])
+
+  Responses_Risk_Profile Responses_Risk_Profile[]
+}
+
+model Images_Documents {
+  id_images_documents Int @id @default(autoincrement())
+  id_investment_account_natural Int // FK
+  investment_account_natural Investment_Account_Natural @relation(fields: [id_investment_account_natural], references: [id_investment_account_natural])
+  // id_investment_account_legal Int //! AÑADIR FK 
+  img_link String
+  img_name String
+  img_description String?
+  id_document_type Int // FK
+  document_type Document_Type @relation(fields: [id_document_type], references: [id_document_type])
+}
+
+model Document_Type {
+  id_document_type Int @id
+  document_type String
+  Images_Documents Images_Documents[]
+}
+
+model Relationship_CRS_Account_Natural {
+  id_relationship_crs_account_natural Int @id
+  id_investment_account_natural Int // FK
+  investment_account_natural Investment_Account_Natural @relation(fields: [id_investment_account_natural], references: [id_investment_account_natural])
+  id_crs_natural Int // FK
+  crs_natural CRS_Natural @relation(fields: [id_crs_natural], references: [id_crs_natural])
+}
+
+model CRS_Natural {
+  id_crs_natural Int @id
+  tax_residence_country String
+  tax_identification_number String
+  reson_for_no_tin String
+
+  Relationship_CRS_Account_Natural Relationship_CRS_Account_Natural[]
+}
+
+// model usuario {
+//   id        Int      @id @default(autoincrement())
+//   nombre    String
+//   email     String   @unique
+//   edad      Int?
+// }
+
+// model test {
+//   id        Int      @id @default(autoincrement())
+//   nombre    String
+// }
+
+// model cargaexcel {
+//   id Int @id @default(autoincrement())
+//   origen String 
+//   dni String
+//   name String
+//   lastname String
+//   email String
+//   phone String
+//   registrationDate DateTime
+//   investmentamount Int
+//   inversorprofile String
+//   idCountry String
+//   coin String 
+//   responsibleexecutive String 
+//   management String
+//   inversorstate String
+//   stateofprocess String 
+//   result String
+//   idContactChannel String? 
+//   address String?
+//   professionoroccupation String? 
+//   idTypePerson String? 
+//   idEducationLevel String? 
+//   idLaboralActivity String? 
+//   idIncomeRange String? 
+//   birthday DateTime?
+// }
+
+// // NEW MODEL STRUCTURE
+
+// model person {
+//   id        Int    @id @default(autoincrement())
+//   dni String
+//   name String
+//   lastname String
+//   email String
+//   phone String 
+//   registration_date DateTime
+//   address String?
+//   birthday DateTime?
+//   id_country Int // FOREIGN KEY COUNTRY
+//   country country @relation(fields: [id_country], references: [id]) 
+//   person_type String
+//   commercial_management commercial_management[]
+//   upload_registration upload_registration[] 
+//   inversor_profile inversor_profile[] 
+// }
+
+// model country {
+//   id Int @id
+//   name String
+//   persons person[] 
+// }
+
+// model commercial_management {
+//   id Int @id
+//   id_person Int   // FOREIGN KEY PERSON 
+//   person person @relation(fields: [id_person], references: [id])
+//   executive_responsible String
+//   management String
+//   inversor_state String
+//   process_state String
+//   result String
+// }
+
+// model upload_registration {
+//   id Int @id
+//   id_person Int   // FOREIGN KEY PERSON 
+//   person person @relation(fields: [id_person], references: [id])
+//   registration_date DateTime
+//   origin String
+// }
+
+// model inversor_profile {
+//   id Int @id
+//   id_person Int   // FOREIGN KEY PERSON 
+//   person person @relation(fields: [id_person], references: [id])
+//   id_inversor_type Int // FOREIGN KEY INVERSOR TYPE
+//   inversor_type inversor_type @relation(fields: [id_inversor_type], references: [id])
+//   investment_amount Int
+//   id_currency Int
+//   currency_type currency_type @relation(fields: [id_currency], references: [id])
+//   contact_channel String?
+//   profession_occupation String?
+//   id_education_level Int // FOREIGN KEY EDUCATIONAL LEVEL
+//   education_level education_level @relation(fields: [id_education_level], references: [id])
+//   id_laboral_activity Int // FOREIGN KEY LABORAL ACTIVITY
+//   laboral_activity laboral_activity @relation(fields: [id_laboral_activity], references: [id])
+//   id_income_range Int // FOREIGN KEY INCOME RANGE
+//   income_range income_range @relation(fields: [id_income_range], references: [id])
+// }
+
+// model currency_type {
+//   id Int @id
+//   currency String
+//   inversor_profile inversor_profile[]
+// }
+
+// model inversor_type {
+//   id Int @id
+//   detail String
+//   inversor_profile inversor_profile[]
+// }
+
+// model education_level {
+//   id Int @id
+//   detail String
+//   inversor_profile inversor_profile[]
+// }
+
+// model laboral_activity {
+//   id Int @id
+//   detail String
+//   inversor_profile inversor_profile[]
+// }
+
+// model income_range {
+//   id Int @id
+//   detail String
+//   inversor_profile inversor_profile[]
+// }

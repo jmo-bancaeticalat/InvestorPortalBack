@@ -1,0 +1,141 @@
+paths:
+  /getIncomeRanges:
+    get:
+      summary: Get income ranges filtered by country
+      tags:
+        - Income
+      parameters:
+        - in: query
+          name: id_country
+          required: true
+          schema:
+            type: integer
+          description: ID of the country to filter income ranges
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  incomeRanges:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/IncomeRange'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+
+  /getOccupations:
+    get:
+      summary: Get occupations filtered by country ID
+      tags:
+        - Occupation
+      parameters:
+        - in: query
+          name: id_country
+          required: true
+          schema:
+            type: string
+          description: The ID of the country to filter occupations
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  occupations:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Occupation'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+
+  /getEducationalLevel:
+    get:
+      summary: Get educational levels
+      tags:
+        - Educational Level
+      parameters:
+        - in: query
+          name: id_country
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  educationalLevels:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/EducationalLevel'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+
+  /getCountriesPostgres:
+    get:
+      summary: Get countries from PostgreSQL
+      tags:
+        - Country
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Country'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+
+components:
+  schemas:
+    IncomeRange:
+      type: object
+      properties:
+        id:
+          type: integer
+        range:
+          type: string
+        id_occupation:
+          type: number
+        name:
+          type: string
+        id_country:
+          type: integer
