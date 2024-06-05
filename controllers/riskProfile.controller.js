@@ -275,24 +275,92 @@ const getScales = async (req, res) => {
 // Creates a single risk profile question selection associated with a natural investment account.
 const postRiskProfileQuestionSelection = async (req, res) => {
   try {
+
     const { id_investment_account_natural, id_responses_risk_profile } = req.body;
 
-    if (!id_investment_account_natural || !id_responses_risk_profile ) {
-      return res.status(400).json({ error: 'Invalid input data' });
+    // Checks if the account ID is provided.
+    if (!id_investment_account_natural) {
+      return res.status(400).json({ error: 'Missing account ID' });
     }
 
-    const createdRiskProfileQuestionSelection = await prisma.risk_Profile_Question_Selection.create({
-      data: {
-        id_investment_account_natural: id_investment_account_natural,
-        id_responses_risk_profile: id_responses_risk_profile,
+    // Checks if the risk profile answers ID is provided.
+    if (!id_responses_risk_profile) {
+      return res.status(400).json({ error: 'Missing risk profile answers ID' });
+    }
+
+    // Validates the format of the investment account ID.
+    if (!validateNumeric(id_investment_account_natural)) {
+      return res.status(400).json({ error: 'The investment account ID has an invalid format' });
+    }
+
+    // Validates the format of the answer ID.
+    if (!validateNumeric(id_responses_risk_profile)) {
+      return res.status(400).json({ error: 'The Answer ID has an invalid format' });
+    }
+
+    // Retrieves the related question ID from the provided answer ID.
+    const relatedQuestion = await prisma.responses_Risk_Profile.findUnique({
+      where: {
+        id_responses_risk_profile: parseInt(id_responses_risk_profile),
+      },
+      select: {
+        id_risk_profile_questions: true,
       },
     });
 
-    return res.json({ok:true, createdRiskProfileQuestionSelection});
+    const { id_risk_profile_questions } = relatedQuestion;
+
+    // Retrieves existing answers for the same question.
+    const existingAnswers = await prisma.risk_Profile_Question_Selection.findMany({
+      where: {
+        id_investment_account_natural: parseInt(id_investment_account_natural),
+        id_responses_risk_profile: {
+          in: (
+            await prisma.responses_Risk_Profile.findMany({
+              where: {
+                id_risk_profile_questions: id_risk_profile_questions,
+              },
+              select: {
+                id_responses_risk_profile: true,
+              },
+            })
+          ).map(response => response.id_responses_risk_profile),
+        },
+      },
+      select: {
+        id_risk_profile_question_selection: true,
+        id_responses_risk_profile: true,
+      },
+    });
+
+    // If there's an existing answer for the same question, delete it.
+    if (existingAnswers.length > 0) {
+      const existingAnswerIds = existingAnswers.map(answer => answer.id_risk_profile_question_selection);
+
+      await prisma.risk_Profile_Question_Selection.deleteMany({
+        where: {
+          id_risk_profile_question_selection: {
+            in: existingAnswerIds,
+          },
+        },
+      });
+    }
+
+    // Save the new answer.
+    const createdRiskProfileQuestionSelection = await prisma.risk_Profile_Question_Selection.create({
+      data: {
+        id_investment_account_natural: parseInt(id_investment_account_natural),
+        id_responses_risk_profile: parseInt(id_responses_risk_profile),
+      },
+    });
+
+    // Return a success response with the created risk profile question selection data.
+    return res.json({ ok: true, data: createdRiskProfileQuestionSelection });
 
   } catch (error) {
+    // Handle errors, print to console, and return a server error.
     console.log(error);
-    return res.status(500).json({ error: "Server error" });
+    return res.status(500).json({ error: 'Server error' });
   }
 };
 
