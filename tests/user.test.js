@@ -77,3 +77,7 @@ describe("PUT /api/v1/putUpdatePassword", () => {
   });
 });
 
+afterAll(() => {
+  app.close();
+  done();
+ });

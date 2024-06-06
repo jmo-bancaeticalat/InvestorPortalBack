@@ -80,3 +80,8 @@ describe("GET /api/v1/UpdateRiskProfileScale", () => {
       expect(response.statusCode).toBe(200);
     });
 });
+
+afterAll(() => {
+  app.close();
+  done();
+ });
