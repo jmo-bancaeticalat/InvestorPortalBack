@@ -367,26 +367,31 @@ const postRiskProfileQuestionSelection = async (req, res) => {
 // Retrieves all risk profile question selections filtered by investment account ID.
 const getRiskProfileQuestionSelection = async (req, res) => {
   try {
+
+    const { id_investment_account_natural } = req.query;
+
+    if (!id_investment_account_natural){
+      return res.status(400).json({ error: 'Missing investment account ID' });
+    }
+
+    if (!validateNumeric(id_investment_account_natural)) {
+      return res.status(400).json({ error: 'Invalid account ID format' });
+    }
+    
     const riskProfileQuestionSelection = await prisma.risk_Profile_Question_Selection.findMany({
+      where: { 
+        id_investment_account_natural: parseInt(id_investment_account_natural),
+      },
       include: {
         responses_risk_profile: true,
       },
     });
 
-    const mappedResults = riskProfileQuestionSelection.map((selection) => {
-      return {
-        id_risk_profile_question_selection: selection.id_risk_profile_question_selection,
-        id_investment_account_natural: selection.id_investment_account_natural,
-        id_responses_risk_profile: {
-          id: selection.id_responses_risk_profile,
-          answer: selection.responses_risk_profile.answer,
-          associated_response_score: selection.responses_risk_profile.associated_response_score,  
-          id_risk_profile_questions: selection.responses_risk_profile.id_risk_profile_questions
-        },
-      };
-    });
+    if(riskProfileQuestionSelection.length === 0) {
+      return res.status(404).json({ error: 'No risk profile anwsers found' });
+    }
 
-    return res.json(mappedResults);
+    return res.status(200).json(riskProfileQuestionSelection);
 
   } catch (error) {
     console.log(error);
