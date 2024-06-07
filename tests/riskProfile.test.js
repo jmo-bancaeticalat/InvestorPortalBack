@@ -1,4 +1,5 @@
 const app = require('../app.js');
+const server = require('../index.js');
 const request = require('supertest'); //SuperTest is used to test the Express application without starting the server 
 
 //Test endpoint getRiskProfileQuestions - return all profile questions
@@ -82,6 +83,6 @@ describe("GET /api/v1/UpdateRiskProfileScale", () => {
 });
 
 afterAll(() => {
-  app.close();
+  server.close();
   done();
  });

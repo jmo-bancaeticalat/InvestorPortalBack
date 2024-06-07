@@ -1,4 +1,5 @@
 const app = require('../app.js');
+const server = require('../index.js');
 const request = require('supertest'); //SuperTest is used to test the Express application without starting the server 
 
 //Test endpoint getProfilesPostgres - return profile of a specific account
@@ -13,6 +14,6 @@ describe("GET /api/v1/getProfilesPostgres", () => {
 });
 
 afterAll(() => {
-  app.close();
+  server.close();
   done();
  });

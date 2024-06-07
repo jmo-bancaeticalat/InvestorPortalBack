@@ -1,4 +1,5 @@
 const app = require('../app.js');
+const server = require('../index.js');
 const request = require('supertest'); //SuperTest is used to test the Express application without starting the server 
 
 //Test endpoint getUserPostgres - return all users
@@ -79,6 +80,6 @@ describe("PUT /api/v1/putUpdatePassword", () => {
 });
 
 afterAll(() => {
-  app.close();
+  server.close();
   done();
  });
