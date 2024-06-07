@@ -191,7 +191,7 @@ router.post("/upload-excel", upload.single("excelFile"), async (req, res) => {
   }
 });
 
-async function conectar() {
+/* async function conectar() {
   try {
     await mongoose.connect(process.env.URI_MONGO, {
       useNewUrlParser: true,
@@ -213,14 +213,14 @@ async function conectar() {
   }
 }
 
-conectar();
+conectar(); */
   // Configuración de GridFS en Mongoose
-  const conn = mongoose.connection;
+  /* const conn = mongoose.connection;
   let gfs;
   conn.once('open', () => {
     gfs = new mongoose.mongo.GridFSBucket(conn.db, {
       bucketName: 'uploads' // Nombre del bucket para almacenar los archivos
     });
-  });
+  }); */
 
 module.exports = router;
