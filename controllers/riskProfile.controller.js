@@ -367,19 +367,22 @@ const postRiskProfileQuestionSelection = async (req, res) => {
 // Retrieves all risk profile question selections filtered by investment account ID.
 const getRiskProfileQuestionSelection = async (req, res) => {
   try {
-
+    // Extracts id_investment_account_natural from the query parameters.
     const { id_investment_account_natural } = req.query;
 
-    if (!id_investment_account_natural){
+    // Checks if the investment account ID is provided.
+    if (!id_investment_account_natural) {
       return res.status(400).json({ error: 'Missing investment account ID' });
     }
 
+    // Validates the format of the investment account ID.
     if (!validateNumeric(id_investment_account_natural)) {
       return res.status(400).json({ error: 'Invalid account ID format' });
     }
-    
+
+    // Retrieves the risk profile question selections for the specified investment account.
     const riskProfileQuestionSelection = await prisma.risk_Profile_Question_Selection.findMany({
-      where: { 
+      where: {
         id_investment_account_natural: parseInt(id_investment_account_natural),
       },
       include: {
@@ -387,34 +390,80 @@ const getRiskProfileQuestionSelection = async (req, res) => {
       },
     });
 
-    if(riskProfileQuestionSelection.length === 0) {
-      return res.status(404).json({ error: 'No risk profile anwsers found' });
+    // Checks if no risk profile answers were found.
+    if (riskProfileQuestionSelection.length === 0) {
+      return res.status(404).json({ error: 'No risk profile answers found' });
     }
 
+    // Returns a success response with the retrieved risk profile question selections.
     return res.status(200).json(riskProfileQuestionSelection);
 
   } catch (error) {
+    // Handles errors, prints to console, and returns a server error.
     console.log(error);
-    return res.status(500).json({ error: "Server error" });
+    return res.status(500).json({ error: 'Server error' });
   }
 };
+
 
 // Retrieves the responses to risk profile questions filtering the request by country ID.
-const getAnswersRiskQuestions = async(req,res) => {
-  const { id_country } = req.query;
-
-  if (!id_country) {
-    return res.status(400).json({ error: "id_country is required"  });
-  }
+const getAnswersRiskQuestions = async (req, res) => {
   try {
-    const getAnswer = await prisma.responses_Risk_Profile.findMany();
-    console.log("Profile question answers");
-    res.json(getAnswer);
+    // Extracts id_country and id_risk_profile_questions from the query parameters.
+    const { id_country, id_risk_profile_questions } = req.query;
+
+    // Checks if the country ID is provided.
+    if (!id_country) {
+      return res.status(400).json({ error: "Country ID is required" });
+    }
+
+    // Checks if the risk profile question ID is provided.
+    if (!id_risk_profile_questions) {
+      return res.status(400).json({ error: "Risk profile question ID is required" });
+    }
+
+    // Validates the format of the country ID.
+    if (!validateNumeric(id_country)) {
+      return res.status(400).json({ error: 'Invalid country ID format' });
+    }
+
+    // Validates the format of the risk profile question ID.
+    if (!validateNumeric(id_risk_profile_questions)) {
+      return res.status(400).json({ error: 'Invalid risk profile question ID format' });
+    }
+
+    // Retrieves the responses to the specified risk profile question.
+    const getAnswer = await prisma.responses_Risk_Profile.findMany({
+      where: {
+        id_risk_profile_questions: parseInt(id_risk_profile_questions),
+      },
+      include: {
+        risk_profile_questions: {
+          select: {
+            id_country: true,
+          },
+        },
+      },
+    });
+
+    // Checks if any of the answers belong to the specified country.
+    const filteredAnswers = getAnswer.filter(answer => answer.risk_profile_questions.id_country === parseInt(id_country));
+
+    // If no answers are found for the specified country, returns a 404 error.
+    if (filteredAnswers.length === 0) {
+      return res.status(404).json({ error: 'No answers found for the specified country' });
+    }
+
+    // Returns a success response with the filtered answers.
+    res.status(200).json(filteredAnswers);
+
   } catch (error) {
+    // Handles errors, prints to console, and returns a server error.
     console.log(error);
     return res.status(500).json({ error: "Server error" });
   }
 };
+
 
 // Retrieves the risk profile questions filtering the request by country ID.
 const getRiskProfileQuestions = async(req,res) => {
