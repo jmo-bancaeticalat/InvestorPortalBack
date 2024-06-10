@@ -92,34 +92,54 @@ const postLoginUserPostgres = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    if (!email || !password) {
-      return res.status(400).json({ error: "You must provide email and password" });
+    // Check if email is provided
+    if (!email) {
+      return res.status(400).json({ error: 'Email is required' });
     }
 
+    // Check if password is provided
+    if (!password) {
+      return res.status(400).json({ error: 'Password is required' });
+    }
+
+    // Validate email format
+    if (!validateEmail(email)) {
+      return res.status(400).json({ error: 'Invalid email' });
+    }
+
+    // Find user by email
     const existingUserMail = await prisma.user.findUnique({
       where: {
         email: email,
       },
     });
 
+    // Check if user exists
     if (!existingUserMail) {
       return res.status(400).json({ error: "User not found" });
     }
 
+    // Compare provided password with the stored hashed password 
     const passwordMatch = await bcrypt.compare(password, existingUserMail.password);
 
+    // If password does not match, return an error
     if (!passwordMatch) {
       return res.status(400).json({ error: "Incorrect password" });
     }
 
+    // Generate a token for the user
     const token = await generateToken(email);
-    return res.json({ ok: true, token });
+  
+    // Return success response with the token
+    return res.status(200).json({ ok: true, token });
 
   } catch (error) {
+    // Handle errors, print to console, and return a server error.
     console.error(error);
     return res.status(500).json({ error: "Server error" });
   }
 };
+
 
 // Creates a new user in the PostgreSQL database.
 const postUserPostgres = async (req, res) => {
