@@ -1,5 +1,4 @@
 require('dotenv').config();
-require('./database/connectdb.js');
 const express = require('express');
 const authRouter = require('./routes/auth.route.js');
 const personRouter = require('./routes/person.route.js');

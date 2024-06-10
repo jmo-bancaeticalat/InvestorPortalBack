@@ -162,7 +162,7 @@ router.put('/updateBirthdayPersonPost/:id', updateBirthdayPersonPost);
 router.get('/testDirectRequest', testDirectRequest);
 router.get('/ruta-segura', getPersons); */
 
-async function conectar() {
+/* async function conectar() {
   try {
     await mongoose.connect(process.env.URI_MONGO, {
       useNewUrlParser: true,
@@ -191,6 +191,6 @@ conn.once('open', () => {
   gfs = new mongoose.mongo.GridFSBucket(conn.db, {
     bucketName: 'uploads' 
   });
-});
+}); */
 
 module.exports = router;
