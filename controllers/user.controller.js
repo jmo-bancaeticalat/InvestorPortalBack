@@ -7,7 +7,8 @@ const prisma = new PrismaClient();
 const {
   validateEmail,
   validatePassword,
-  validateBoolean
+  validateBoolean,
+  validateNumeric
 } = require('../utils/validation')
 
 
@@ -176,7 +177,7 @@ const postUserPostgres = async (req, res) => {
   
     // Validate new password format
     const passwordError = validatePassword(password);
-    
+
     if (passwordError) {
       return res.status(400).json({ error: passwordError });
     }
@@ -220,23 +221,44 @@ const postUserPostgres = async (req, res) => {
 };
 
 
-// Retrieves information of users with their associated profiles filtered by an ID or by an email.
+// Retrieves information of users with their associated profiles filtered by an ID.
 const getUserPostgres = async (req, res) => {
   try {
+    const { id_user } = req.query;
+
+    // Check if user ID is provided
+    if (!id_user) {
+      return res.status(400).json({ error: 'User ID is required' });
+    }
+
+    if (!validateNumeric(id_user)) {
+      return res.status(400).json({ error: 'Invalid User ID' });
+    }
+
+    // Retrieve user information along with their profile name
     const getUser = await prisma.user.findMany({
+      where: {
+        id_user: parseInt(id_user),  // Ensure the ID is parsed as an integer
+      },
       include: {
         profile: {
           select: {
-            name: true
-          }
-        }
-      }
+            name: true,  // Include only the name of the profile
+          },
+        },
+      },
     });
 
-    console.log("Users fetched successfully");
-    res.json(getUser);
+    // If user does not exist, return an error 
+    if (getUser.length === 0) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    // Return the retrieved user information
+    return res.status(200).json(getUser);
 
   } catch (error) {
+    // Handle errors, print to console, and return a server error.
     console.log(error);
     return res.status(500).json({ error: "Server error" });
   }
