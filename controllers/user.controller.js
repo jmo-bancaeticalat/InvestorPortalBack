@@ -7,6 +7,7 @@ const prisma = new PrismaClient();
 const {
   validateEmail,
   validatePassword,
+  validateBoolean
 } = require('../utils/validation')
 
 
@@ -145,16 +146,57 @@ const postLoginUserPostgres = async (req, res) => {
 const postUserPostgres = async (req, res) => {
 
   try {
+    const { email, password, terms_and_conditions } = req.body;
+
+    //* administrator as default profile
+    const adminUser = 2;
+
+    // Check if email is provided
+    if (!email) {
+      return res.status(400).json({ error: 'Email is required' });
+    }
+
+    // Check if password is provided
+    if (!password) {
+      return res.status(400).json({ error: 'Password is required' });
+    }
+
+    // Check if terms and conditions are accepted
+    if (!terms_and_conditions) {
+      return res.status(400).json({ error: 'Accepting the terms and conditions is required' });
+    }
+
+    if (!validateEmail(email)) {
+      return res.status(400).json({ error: 'Invalid email' });
+    }
+
+    if (!validateBoolean(terms_and_conditions)) {
+      return res.status(400).json({ error: 'Invalid terms and conditions' });
+    }
+  
+    // Validate new password format
+    const passwordError = validatePassword(password);
+    
+    if (passwordError) {
+      return res.status(400).json({ error: passwordError });
+    }
+
+    // Check if a user with the given email already exists
     const existingUser = await prisma.user.findMany({
       where: {
         email: email,
       },
     });
 
-    if (existingUser.length > 0) throw { code: 11000 };
+    // If user exists, return an error
+    if (existingUser.length !== 0) {
+      return res.status(404).json({ error: 'There is already a user created with this email' });
+    }
 
+    // Hash the password
     const hashedPassword = await bcrypt.hash(password, 10);
 
+    // Create the new user
     const createdUser = await prisma.user.create({
       data: {
         email,
@@ -162,21 +204,21 @@ const postUserPostgres = async (req, res) => {
         registration_date: new Date(),
         terms_and_conditions,
         profile: {
-          connect: { id_profile: id_profile }
-        }
+          connect: { id_profile: adminUser },
+        },
       },
     });
 
-    sendMailUniquePortal(email);
-
-    return res.json({ ok: true, createdUser });
+    // Return success response with the created user
+    return res.status(200).json({ ok: true, createdUser });
 
   } catch (error) {
-
+    // Handle errors, print to console, and return a server error.
     console.log(error);
     return res.status(500).json({ error: "Server error" });
   }
 };
+
 
 // Retrieves information of users with their associated profiles filtered by an ID or by an email.
 const getUserPostgres = async (req, res) => {
