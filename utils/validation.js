@@ -44,6 +44,32 @@ function validatePhone(phoneNumber) {
     return phoneNumberRegex.test(phoneNumber);
 }
 
+function validatePassword(password) {
+    // Check if password has at least 8 characters
+    if (password.length < 8) {
+        return 'Password must be at least 8 characters long.';
+    }
+    // Check if password contains at least one lowercase letter
+    if (!/[a-z]/.test(password)) {
+        return 'Password must contain at least one lowercase letter.';
+    }
+    // Check if password contains at least one uppercase letter
+    if (!/[A-Z]/.test(password)) {
+        return 'Password must contain at least one uppercase letter.';
+    }
+    // Check if password contains at least one number
+    if (!/\d/.test(password)) {
+        return 'Password must contain at least one number.';
+    }
+    // Check if password contains at least one special character
+    if (!/[@$!%*?&.]/.test(password)) {
+        return 'Password must contain at least one special character (@$!%*?&.).';
+    }
+    // If all checks pass, return null (no error)
+    return null;
+}
+
+
 module.exports = {
     validateNumeric,
     validateAlphabetic,
@@ -51,5 +77,6 @@ module.exports = {
     validateNoQueryParams,
     validateEmail,
     validateDate,
-    validatePhone
+    validatePhone,
+    validatePassword
 }
