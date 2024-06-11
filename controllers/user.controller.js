@@ -20,6 +20,17 @@ const clearTestUser = async () => {
   });
 };
 
+// Creating user for testing
+const createUser = async (userData) => {
+  try {
+    await prisma.user.create({
+      data: userData,
+    });
+  } catch (error) {
+    throw error;
+  }
+};
+
 
 // Generates a JWT token with the provided email as payload.
 const generateToken = async (email) => {
@@ -200,7 +211,7 @@ const postUserPostgres = async (req, res) => {
 
     // If user exists, return an error
     if (existingUser.length !== 0) {
-      return res.status(404).json({ error: 'There is already a user created with this email' });
+      return res.status(400).json({ error: 'There is already a user created with this email' });
     }
 
     // Hash the password
@@ -275,7 +286,8 @@ const getUserPostgres = async (req, res) => {
 
 
 module.exports = {
-  clearTestUser,
+    createUser,
+    clearTestUser,
     getUserPostgres,
     postUserPostgres,
     postLoginUserPostgres,

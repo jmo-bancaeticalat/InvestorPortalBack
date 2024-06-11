@@ -5,7 +5,8 @@ const prisma = new PrismaClient();
 
 
 const {
-  clearTestUser
+  clearTestUser,
+  createUser
 } = require('../controllers/user.controller.js')
 
 describe("POST /api/v1/postUserPostgres", () => {
@@ -186,7 +187,7 @@ describe("POST /api/v1/postUserPostgres", () => {
     expect(response.body).toHaveProperty("error", "Password must contain at least one special character (@$!%*?&.).");
   });
 
-  test("Should respond with 404 if user with email already exists", async () => {
+  test("Should respond with 400 if user with email already exists", async () => {
     const existingUser = {
       email: "test@example.com",
       password: "Test123!",
@@ -196,18 +197,17 @@ describe("POST /api/v1/postUserPostgres", () => {
         connect: {id_profile: 2}
       }
     };
-  
-    // Crear un usuario existente
-    await prisma.user.create({
-      data: existingUser,
-    });
+
+      
+    await createUser(existingUser)
+
   
     // Intentar crear el mismo usuario otra vez
     const response = await request(server)
       .post("/api/v1/postUserPostgres")
       .send(existingUser);
   
-    expect(response.statusCode).toBe(404);
+    expect(response.statusCode).toBe(400);
     expect(response.body).toHaveProperty("error", "There is already a user created with this email");
   });
   
