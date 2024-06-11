@@ -7,6 +7,15 @@ const {
     validateBoolean,
  } = require('../utils/validation')
 
+ // Deleting tax resindecy for testing
+const clearTaxResidency = async () => {
+    await prisma.country_Tax_Residence.deleteMany({
+      where: {
+        id_investment_account_natural: 8,
+      },
+    });
+};
+
 
 // Obtains the tax residency of a user according to their investment account.
 const getTaxResidency = async (req, res) => {
@@ -82,7 +91,7 @@ const postTaxResidency = async (req, res) => {
         }
 
         // Check if the country ID has a valid format (only digits) and is not NaN.
-        if (validateNumeric(countryId)) {
+        if (!validateNumeric(countryId)) {
             return res.status(400).json({ error: "Invalid country ID format" });
         }
 
@@ -664,6 +673,7 @@ const getInvestmentAccountNaturalPostgres = async (req, res) => {
 };
 
 module.exports = {
+    clearTaxResidency,
     getTaxResidency,
     postTaxResidency,
     postPEP,
