@@ -11,6 +11,15 @@ const {
   validateNumeric
 } = require('../utils/validation')
 
+// Deleting user for testing
+const clearTestUser = async () => {
+  await prisma.user.deleteMany({
+    where: {
+      email: "test@example.com",
+    },
+  });
+};
+
 
 // Generates a JWT token with the provided email as payload.
 const generateToken = async (email) => {
@@ -211,7 +220,7 @@ const postUserPostgres = async (req, res) => {
     });
 
     // Return success response with the created user
-    return res.status(200).json({ ok: true, createdUser });
+    return res.status(201).json({ ok: true, createdUser });
 
   } catch (error) {
     // Handle errors, print to console, and return a server error.
@@ -266,6 +275,7 @@ const getUserPostgres = async (req, res) => {
 
 
 module.exports = {
+  clearTestUser,
     getUserPostgres,
     postUserPostgres,
     postLoginUserPostgres,
