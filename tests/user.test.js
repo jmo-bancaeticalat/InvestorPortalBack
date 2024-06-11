@@ -1,8 +1,5 @@
 const server = require('../index.js');
 const request = require('supertest'); //SuperTest is used to test the Express application without starting the server 
-const { PrismaClient } = require("@prisma/client");
-const prisma = new PrismaClient();
-
 
 const {
   clearTestUser,
@@ -17,7 +14,7 @@ describe("POST /api/v1/postUserPostgres", () => {
   });
 
   // Prueba si se crea un nuevo usuario correctamente
-  test("Should create a new user with 201 Ok: true", async () => {
+  test("Should respond with 200 if a new user is created", async () => {
 
     const newUser = {
       email: "test@example.com", 
