@@ -194,30 +194,33 @@ const getDocumentByIdAccount = async (req, res) => {
 //! Falta hacer la prueba de solicitud
 //* Updates an existing document in the system. Returns the updated document in JSON format.
 const putDocument = async (req, res) => {
-
-  const {id_images_documents} = req.body;
+  const { id_images_documents } = req.body;
 
   try {
+    // Check if the document ID is provided
+    if (!id_images_documents) {
+      return res.status(400).json({ error: 'Missing document ID' });
+    }
 
-    console.log(id_images_documents);
-
-
-    // Check if the image id is correct
+    // Search for the existing document by ID
     const existingDocument = await prisma.images_Documents.findUnique({
       where: {
         id_images_documents: id_images_documents,
       },
     });
 
-    // Validation if the document to be updated exists
-    if(!existingDocument){
-      return res.status(404).json({message:"This record does not exist"});
+    // Validate if the document to be updated exists
+    if (!existingDocument) {
+      return res.status(404).json({ message: "This record does not exist" });
     }
 
-    // Check if a file was received to update
+    // Check if a file was received for updating
     if (!req.file) {
       return res.status(400).json({ error: 'No file received for updating' });
     }
+
+    // Extract file details from the request
+    const { path, filename } = req.file;
 
     // Update the document in the database
     const updatedDocument = await prisma.images_Documents.update({
@@ -230,16 +233,15 @@ const putDocument = async (req, res) => {
       },
     });
 
-    res.json(updatedDocument);
-
-    console.log('Document updated successfully!');
-
+    // Respond with the updated document
+    res.status(200).json({ ok: true, updatedDocument });
 
   } catch (error) {
-    console.log(error);
+    console.error(error);
     res.status(500).json({ error: 'Server error' });
   }
-}
+};
+
 
 module.exports = {
     storage,
