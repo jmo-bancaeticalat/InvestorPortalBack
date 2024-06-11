@@ -33,11 +33,11 @@ const getIncomeRanges = async (req, res) => {
 
         // If no ranges are found, consider the country code invalid
         if (filteredIncomeRanges.length === 0) {
-            return res.status(404).json({ error: 'Invalid country code' });
+            return res.status(404).json({ error: 'No existing income range for the country' });
         }
     
         // Return the filtered income ranges in JSON format
-        return res.json({ incomeRanges: filteredIncomeRanges });
+        return res.status(200).json({ incomeRanges: filteredIncomeRanges });
   
     } catch (error) {
         // Log and handle errors
@@ -76,7 +76,7 @@ const getOccupations = async (req, res) => {
 
         // If no occupations are found, consider the country code invalid
         if (filteredOccupations.length === 0) {
-            return res.status(404).json({ error: 'Country ID does not exist' });
+            return res.status(404).json({ error: 'No existing occupations for the country' });
         }
 
         // Return the filtered occupations in JSON format
@@ -119,7 +119,7 @@ const getEducationalLevel = async (req, res) => {
 
         // If no educational levels are found, return an empty array
         if (filteredEducationalLevels.length === 0) {
-            return res.status(200).json({ error: 'There are no educational levels available for this country ID' });
+            return res.status(404).json({ error: 'There are no educational levels available for this country ID' });
         }
 
         // Return the filtered educational levels in JSON format
