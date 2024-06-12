@@ -16,6 +16,19 @@ const clearTaxResidency = async () => {
     });
 };
 
+// Geting if_pep from account for testing 
+const statusPEP = async () => {
+    const account = await prisma.investment_Account_Natural.findFirst({
+        where: {
+            id_investment_account_natural: 8,
+        },
+        select: {
+            if_pep: true
+        }
+    });
+    return account.if_pep;
+};
+
 
 // Obtains the tax residency of a user according to their investment account.
 const getTaxResidency = async (req, res) => {
@@ -683,6 +696,7 @@ const getInvestmentAccountNaturalPostgres = async (req, res) => {
 
 module.exports = {
     clearTaxResidency,
+    statusPEP,
     getTaxResidency,
     postTaxResidency,
     postPEP,
