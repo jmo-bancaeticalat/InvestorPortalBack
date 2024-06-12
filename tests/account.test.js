@@ -3,7 +3,7 @@ const request = require('supertest'); //SuperTest is used to test the Express ap
 
 const {
     clearTaxResidency,
-    statusPEP
+    statusAccount
   } = require('../controllers/account.controller.js');
 
 
@@ -194,13 +194,13 @@ describe("POST /api/v1/postPEP", () => {
 
 });
 
-
 describe("PUT /api/v1/putIfPEP", () => {
 
     let currentPEPStatus;
 
     beforeEach(async () => {
-        currentPEPStatus = await statusPEP();
+        const account = await statusAccount();
+        currentPEPStatus = account.if_pep;
     });
 
     test("Should respond with a 200 status code and updated account", async () => {
@@ -224,6 +224,44 @@ describe("PUT /api/v1/putIfPEP", () => {
             .send({
                 id_investment_account_natural: 999,
                 if_pep: true
+            });
+
+        expect(response.statusCode).toBe(404);
+        expect(response.body).toHaveProperty("error", "The investment account does not exist");
+    });
+
+});
+
+describe("PUT /api/v1/putIfAML", () => {
+
+    let currentAmlStatus;
+
+    beforeEach(async () => {
+        const account = await statusAccount();
+        currentAmlStatus = account.if_AML;
+    });
+
+    test("Should respond with a 200 status code and updated account", async () => {
+
+        newAmlStatus = !currentAmlStatus;
+
+        const response = await request(server)
+            .put("/api/v1/putIfAML")
+            .send({
+                id_investment_account_natural: 8,
+                if_AML: newAmlStatus
+            });
+
+        expect(response.statusCode).toBe(200);
+        expect(response.body).toHaveProperty("id_investment_account_natural");
+    });
+
+    test("Should respond with 404 if investment account does not exist", async () => {
+        const response = await request(server)
+            .put("/api/v1/putIfAML")
+            .send({
+                id_investment_account_natural: 999,
+                if_AML: true
             });
 
         expect(response.statusCode).toBe(404);

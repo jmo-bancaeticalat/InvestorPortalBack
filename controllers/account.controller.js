@@ -17,16 +17,17 @@ const clearTaxResidency = async () => {
 };
 
 // Geting if_pep from account for testing 
-const statusPEP = async () => {
+const statusAccount = async () => {
     const account = await prisma.investment_Account_Natural.findFirst({
         where: {
             id_investment_account_natural: 8,
         },
         select: {
-            if_pep: true
+            if_pep: true,
+            if_AML: true
         }
     });
-    return account.if_pep;
+    return account
 };
 
 
@@ -696,7 +697,7 @@ const getInvestmentAccountNaturalPostgres = async (req, res) => {
 
 module.exports = {
     clearTaxResidency,
-    statusPEP,
+    statusAccount,
     getTaxResidency,
     postTaxResidency,
     postPEP,
