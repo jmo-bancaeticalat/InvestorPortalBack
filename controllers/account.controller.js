@@ -223,13 +223,22 @@ const postPEP = async (req, res) => {
             return res.status(404).json({ error: "Country does not exist" });
         }
 
-        // Check if the investment account already has a defined PEP. If the value is not 0, it has a pep already associated
-        const existingPEP = await prisma.investment_Account_Natural.findFirst({
-            where: { id_pep: { not: 0 } }
-        });
+       // Check if the investment account already has a defined PEP. If the value is not 0, it has a pep already associated
+       const existingPEP = await prisma.investment_Account_Natural.findFirst({
+        where: {
+            id_investment_account_natural: id_investment_account_natural,
+        },
+        include: {
+            pep: {
+                select: {
+                    id_pep: true
+                }
+            }
+        }
+    });
         
         // If the investment account already has a defined PEP, return a conflict error
-        if (existingPEP) {
+        if (existingPEP.id_pep !== 0) {
             return res.status(409).json({ error: "This investment account already has a defined PEP." });
         }
         
