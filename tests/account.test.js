@@ -9,7 +9,7 @@ const {
 
 describe("GET /api/v1/getTaxResidency", () => {
 
-    test("Should respond with a 200 status code and tax residency information", async () => {
+    test("Should respond with 200 status code and tax residency information", async () => {
         const response = await request(server).get("/api/v1/getTaxResidency?accountId=7").send();
         expect(response.statusCode).toBe(200);
         expect(response.body).toHaveProperty("taxResidency");
@@ -30,7 +30,7 @@ describe("POST /api/v1/postTaxResidency", () => {
         await clearTaxResidency();
     });
 
-    test("Should respond with a 201 status code and new tax residency information", async () => {
+    test("Should respond with 201 status code and new tax residency information", async () => {
 
         const body = {
             "countryId": 38,
@@ -78,7 +78,7 @@ describe("POST /api/v1/postTaxResidency", () => {
 describe("POST /api/v1/postPEP", () => {
 
 
-    test("Should respond with a 201 status code and new PEP register", async () => {
+    test("Should respond with 201 status code and new PEP register", async () => {
 
         const body = {
             id_investment_account_natural: 7,
@@ -203,7 +203,7 @@ describe("PUT /api/v1/putIfPEP", () => {
         currentPEPStatus = account.if_pep;
     });
 
-    test("Should respond with a 200 status code and updated account", async () => {
+    test("Should respond with 200 status code and updated account", async () => {
         const newPEPStatus = !currentPEPStatus;
 
         const response = await request(server)
@@ -241,9 +241,9 @@ describe("PUT /api/v1/putIfAML", () => {
         currentAmlStatus = account.if_AML;
     });
 
-    test("Should respond with a 200 status code and updated account", async () => {
+    test("Should respond with 200 status code and updated account", async () => {
 
-        newAmlStatus = !currentAmlStatus;
+        let newAmlStatus = !currentAmlStatus;
 
         const response = await request(server)
             .put("/api/v1/putIfAML")
@@ -268,6 +268,43 @@ describe("PUT /api/v1/putIfAML", () => {
         expect(response.body).toHaveProperty("error", "The investment account does not exist");
     });
 
+});
+
+describe("PUT /api/v1/putQualifiedInvestor", () => {
+
+    let currentQualifiedInvestorStatus;
+
+    beforeEach(async () => {
+        const account = await statusAccount();
+        currentQualifiedInvestorStatus = account.if_qualified_investor;
+    });
+
+    test("Should respond with 200 status code and updated account", async () => {
+
+        let newQualifiedInvestorStatus = !currentQualifiedInvestorStatus;
+
+        const response = await request(server)
+            .put("/api/v1/putQualifiedInvestor")
+            .send({
+                id_investment_account_natural: 8,
+                if_qualified_investor: newQualifiedInvestorStatus
+            });
+
+        expect(response.statusCode).toBe(200);
+        expect(response.body).toHaveProperty("id_investment_account_natural");
+    });
+
+    test("Should respond with 404 if investment account does not exist", async () => {
+        const response = await request(server)
+            .put("/api/v1/putQualifiedInvestor")
+            .send({
+                id_investment_account_natural: 999,
+                if_qualified_investor: true
+            });
+
+        expect(response.statusCode).toBe(404);
+        expect(response.body).toHaveProperty("error", "The investment account does not exist");
+    });
 });
 
 afterAll(() => {

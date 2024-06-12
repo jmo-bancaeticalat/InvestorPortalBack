@@ -24,7 +24,8 @@ const statusAccount = async () => {
         },
         select: {
             if_pep: true,
-            if_AML: true
+            if_AML: true,
+            if_qualified_investor: true,
         }
     });
     return account
