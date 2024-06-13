@@ -611,9 +611,6 @@ const postInvestmentAccountNatural = async (req, res) => {
             return res.status(400).json({ error: "Invalid national identifier number format. It must have a hyphen in the penultimate position and end with a digit." });
         }
 
-
-        
-
         // Check if the natural person exists in the database
         const existingNaturalPerson = await prisma.natural_Person.findFirst({
             where: {
@@ -646,7 +643,7 @@ const postInvestmentAccountNatural = async (req, res) => {
         });
 
         // Return a success response with the created investment account    
-        return res.json({ ok: true, createdInvestmentAccountNatural });
+        return res.status(201).json({ ok: true, createdInvestmentAccountNatural });
 
     } catch (error) {
 

@@ -309,7 +309,7 @@ describe("PUT /api/v1/putQualifiedInvestor", () => {
 
 describe("GET /api/v1/getInvestmentAccountLegal", () => {
 
-    test("Should respond with a 200 status code and account information", async () => {
+    test("Should respond with 200 status code and account information", async () => {
         const response = await request(server)
             .get("/api/v1/getInvestmentAccountLegal?id_investment_account_legal=1")
             .send();
@@ -331,7 +331,7 @@ describe("GET /api/v1/getInvestmentAccountLegal", () => {
 
 describe("POST /api/v1/postInvestmentAccountLegal", () => {
 
-    test("Should respond with a 201 status code and the created investment account", async () => {
+    test("Should respond with 201 status code and the created investment account", async () => {
         const response = await request(server)
             .post("/api/v1/postInvestmentAccountLegal")
             .send({ id_legal_person: 1 });
@@ -348,6 +348,53 @@ describe("POST /api/v1/postInvestmentAccountLegal", () => {
 
         expect(response.statusCode).toBe(404);
         expect(response.body).toHaveProperty("error", "The legal person does not exist");
+    });
+});
+
+
+describe("POST /api/v1/postInvestmentAccountNatural", () => {
+
+    test("Should respond with 201 status code and the created investment account", async () => {
+        const response = await request(server)
+            .post("/api/v1/postInvestmentAccountNatural")
+            .send({ 
+                id_natural_person: 1,
+                identifier_national_number: "12345678-9" 
+            });
+
+        expect(response.statusCode).toBe(201);
+        expect(response.body).toHaveProperty("ok", true);
+        expect(response.body).toHaveProperty("createdInvestmentAccountNatural");
+    });
+
+    test("Should respond with 404 if natural person does not exist", async () => {
+        const response = await request(server)
+            .post("/api/v1/postInvestmentAccountNatural")
+            .send({ id_natural_person: 999, identifier_national_number: "12345678-9" });
+
+        expect(response.statusCode).toBe(404);
+        expect(response.body).toHaveProperty("error", "The natural person does not exist");
+    });
+});
+
+describe("GET /api/v1/getInvestmentAccountNaturalPostgres", () => {
+
+    test("Should respond with 200 status code and the investment account details", async () => {
+        const response = await request(server)
+            .get("/api/v1/getInvestmentAccountNaturalPostgres")
+            .query({ id_investment_account_natural: 8 });
+
+        expect(response.statusCode).toBe(200);
+        expect(response.body).toHaveProperty("id_investment_account_natural", 8);
+    });
+
+    test("Should respond with 404 if investment account does not exist", async () => {
+        const response = await request(server)
+            .get("/api/v1/getInvestmentAccountNaturalPostgres")
+            .query({ id_investment_account_natural: 999 });
+
+        expect(response.statusCode).toBe(404);
+        expect(response.body).toHaveProperty("error", "The investment account does not exist");
     });
 });
 
