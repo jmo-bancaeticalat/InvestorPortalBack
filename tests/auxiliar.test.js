@@ -3,7 +3,7 @@ const request = require('supertest'); //SuperTest is used to test the Express ap
 
 describe("GET /api/v1/getIncomeRanges", () => {
 
-    test("Should respond with a 200 status code and the filtered income ranges", async () => {
+    test("Should respond with 200 status code and the filtered income ranges", async () => {
         const response = await request(server)
             .get("/api/v1/getIncomeRanges")
             .query({ id_country: 39 });
@@ -39,7 +39,41 @@ describe("GET /api/v1/getIncomeRanges", () => {
     
 });
 
+describe("GET /api/v1/getOccupations", () => {
 
+    test("Should respond with 200 status code and the filtered occupations", async () => {
+        const response = await request(server)
+            .get("/api/v1/getOccupations")
+            .query({ id_country: 39 });
+
+        expect(response.statusCode).toBe(200);
+        expect(response.body).toHaveProperty("occupations");
+        expect(Array.isArray(response.body.occupations)).toBe(true);
+        // Additional checks to ensure the filtered results match the provided country ID
+        response.body.occupations.forEach(occupation => {
+            expect(occupation.id_country).toBe(39);
+        });
+    });
+
+    test("Should respond with 400 if country ID format is invalid", async () => {
+        const response = await request(server)
+            .get("/api/v1/getOccupations")
+            .query({ id_country: "abc" });
+
+        expect(response.statusCode).toBe(400);
+        expect(response.body).toHaveProperty("error", "Country ID format is invalid");
+    });
+
+    test("Should respond with 404 if no occupations exist for the provided country", async () => {
+        const response = await request(server)
+            .get("/api/v1/getOccupations")
+            .query({ id_country: 999 });
+
+        expect(response.statusCode).toBe(404);
+        expect(response.body).toHaveProperty("error", "No existing occupations for the country");
+    });
+
+});
 
 
 
