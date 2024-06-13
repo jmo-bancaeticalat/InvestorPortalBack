@@ -110,7 +110,25 @@ describe("GET /api/v1/getEducationalLevel", () => {
     });
 });
 
+describe("GET /api/v1/getCountriesPostgres", () => {
 
+    test("Should respond with 200 status code and an array of countries", async () => {
+        const response = await request(server)
+            .get("/api/v1/getCountriesPostgres");
+
+        expect(response.statusCode).toBe(200);
+        expect(Array.isArray(response.body)).toBe(true);
+    });
+
+    test("Should respond with 400 if there are unexpected query parameters", async () => {
+        const response = await request(server)
+            .get("/api/v1/getCountriesPostgres")
+            .query({ invalidParam: 'value' });
+
+        expect(response.statusCode).toBe(400);
+        expect(response.body).toHaveProperty("error", "Invalid request format");
+    });
+});
 
 
 afterAll(() => {
