@@ -307,6 +307,51 @@ describe("PUT /api/v1/putQualifiedInvestor", () => {
     });
 });
 
+describe("GET /api/v1/getInvestmentAccountLegal", () => {
+
+    test("Should respond with a 200 status code and account information", async () => {
+        const response = await request(server)
+            .get("/api/v1/getInvestmentAccountLegal?id_investment_account_legal=1")
+            .send();
+
+        expect(response.statusCode).toBe(200);
+        expect(response.body).toHaveProperty("id_investment_account_legal");
+    });
+
+    test("Should respond with 404 if investment account does not exist", async () => {
+        const response = await request(server)
+            .get("/api/v1/getInvestmentAccountLegal?id_investment_account_legal=999")
+            .send();
+
+        expect(response.statusCode).toBe(404);
+        expect(response.body).toHaveProperty("error", "The investment account does not exist");
+    });
+
+});
+
+describe("POST /api/v1/postInvestmentAccountLegal", () => {
+
+    test("Should respond with a 201 status code and the created investment account", async () => {
+        const response = await request(server)
+            .post("/api/v1/postInvestmentAccountLegal")
+            .send({ id_legal_person: 1 });
+
+        expect(response.statusCode).toBe(201);
+        expect(response.body).toHaveProperty("ok", true);
+        expect(response.body).toHaveProperty("createdInvestmentAccountLegal");
+    });
+
+    test("Should respond with 404 if legal person does not exist", async () => {
+        const response = await request(server)
+            .post("/api/v1/postInvestmentAccountLegal")
+            .send({ id_legal_person: 999 });
+
+        expect(response.statusCode).toBe(404);
+        expect(response.body).toHaveProperty("error", "The legal person does not exist");
+    });
+});
+
+
 afterAll(() => {
     server.close();
 });
