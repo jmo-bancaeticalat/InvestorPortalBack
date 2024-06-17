@@ -2,7 +2,8 @@ const server = require('../index.js');
 const request = require('supertest'); 
 
 const {
-    testDeletRelationship
+    testDeletRelationship,
+    testDeletLegalPerson
   } = require('../controllers/person.controller.js');
 
 describe("POST /api/v1/postRelationshipNaturalLegal", () => {
@@ -82,6 +83,27 @@ describe("PUT /api/v1/putLegalPerson", () => {
             expect(response.statusCode).toBe(404);
             expect(response.body).toEqual({ error: 'The legal person does not exist' });
         });
+});
+
+describe("POST /api/v1/postLegalPerson", () => {
+
+    beforeEach(async () => {
+        await testDeletLegalPerson();
+    });
+
+    // Prueba exitosa: Creación correcta de la entidad legal
+    test("Should respond with 200 and create the legal person for valid company creation date", async () => {
+        const response = await request(server)
+            .post("/api/v1/postLegalPerson")
+            .send({
+                company_creation_date: '2024-01-01T00:00:00.000Z',
+            });
+
+        expect(response.statusCode).toBe(200);
+        expect(response.body).toHaveProperty('ok', true);
+        expect(response.body.createLegalPerson).toHaveProperty('company_creation_date', '2024-01-01T00:00:00.000Z');
+
+    });
 });
 
 afterAll(() => {

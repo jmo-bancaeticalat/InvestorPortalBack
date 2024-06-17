@@ -26,7 +26,7 @@ const {
 
 //* ---------------- PERSONS CONTROLLERS ----------------------- *\\
 
- // Deleting relationship for testing
+// Deleting relationship for testing
 const testDeletRelationship = async () => {
   await prisma.relationship_Natural_Legal.deleteMany({
     where: {
@@ -36,6 +36,14 @@ const testDeletRelationship = async () => {
   });
 }
 
+// Deleting legal person for testing
+const testDeletLegalPerson = async () => {
+  await prisma.legal_Person.deleteMany({
+    where: {
+      company_creation_date: '2024-01-01T00:00:00.000Z'
+    },
+  });
+}
 
 // Creates a relationship between a natural person and a legal entity in the database.
 const postRelationshipNaturalLegal = async (req, res) => {
@@ -1814,6 +1822,7 @@ function random(min, max) {
 // Exportaciones
 module.exports = {
   testDeletRelationship,
+  testDeletLegalPerson,
   putLegalPerson,
   postLegalPerson,
   updateNaturalPerson,
