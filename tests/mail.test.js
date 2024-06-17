@@ -1,5 +1,5 @@
 const server = require('../index.js');
-const request = require('supertest'); //SuperTest is used to test the Express application without starting the server 
+const request = require('supertest');
 const jwt = require('jsonwebtoken');
 
 const {
@@ -127,15 +127,7 @@ describe("POST /api/v1/sendPasswordUpdateLink", () => {
         expect(response.statusCode).toBe(404);
         expect(response.body).toEqual({ error: "User not found" });
     });
-
-
 });
-
-
-
-
-
-
 
 afterAll(() => {
     server.close();
