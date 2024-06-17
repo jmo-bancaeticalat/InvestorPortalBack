@@ -10,7 +10,6 @@ describe("GET /api/v1/getVerifyToken", () => {
 
     const email = 'test@example.com'
 
-
     test("Should respond with 200 and 'Email verified successfully' for valid token and email", async () => {
         
         const token = await generateToken(email)
@@ -82,6 +81,29 @@ describe("GET /api/v1/getVerifyToken", () => {
     });
 });
 
+describe("POST /api/v1/postResendMail", () => {
+
+    test("Should respond with 200 and 'Email resent successfully' for valid and existing email", async () => {
+
+        const response = await request(server)
+            .post("/api/v1/postResendMail")
+            .send({ email: 'ejemplo@dominio.com' });
+
+        expect(response.statusCode).toBe(200);
+        expect(response.body).toHaveProperty('ok', true);
+        expect(response.body).toHaveProperty('message', 'Email resent successfully');
+    });
+
+    test("Should respond with 404 if user with email does not exist", async () => {
+        const response = await request(server)
+            .post("/api/v1/postResendMail")
+            .send({ email: 'nonexistent@example.com' });
+
+        expect(response.statusCode).toBe(404);
+        expect(response.body).toEqual({ error: 'User not found' });
+    });
+    
+});
 
 
 
