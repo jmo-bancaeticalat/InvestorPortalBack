@@ -105,7 +105,31 @@ describe("POST /api/v1/postResendMail", () => {
     
 });
 
+describe("POST /api/v1/sendPasswordUpdateLink", () => {
 
+    test("Should respond with 200 and 'Email sent successfully for password update' for valid and existing email", async () => {
+
+        const response = await request(server)
+            .post("/api/v1/sendPasswordUpdateLink")
+            .send({ email: 'ejemplo@dominio.com' });
+
+        expect(response.statusCode).toBe(200);
+        expect(response.body).toHaveProperty('ok', true);
+        expect(response.body).toHaveProperty('message', 'Email sent successfully for password update');
+
+    });
+
+    test("Should respond with 404 if user with email does not exist", async () => {
+        const response = await request(server)
+            .post("/api/v1/sendPasswordUpdateLink")
+            .send({ email: 'nonexistent@example.com' });
+
+        expect(response.statusCode).toBe(404);
+        expect(response.body).toEqual({ error: "User not found" });
+    });
+
+
+});
 
 
 
