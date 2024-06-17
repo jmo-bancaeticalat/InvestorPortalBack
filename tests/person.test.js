@@ -106,6 +106,58 @@ describe("POST /api/v1/postLegalPerson", () => {
     });
 });
 
+describe("PUT /api/v1/updateNaturalPerson", () => {
+
+    test("Should respond with 200 and update the natural person for valid data", async () => {
+
+        const response = await request(server)
+            .put("/api/v1/updateNaturalPerson")
+            .send({
+                id_natural_person: 1,
+                cell_phone: "+34987654321",
+                birthday: "2023-01-01T12:00:00.000Z",
+                usa_citizen: false,
+                id_country_residence: 2,
+                id_country_nationality: 2,
+                id_gender: 2,
+                id_civil_status: 2
+            });
+ 
+            expect(response.statusCode).toBe(200);
+            expect(response.body).toHaveProperty('message', 'Natural person correctly updated');    
+    });
+
+    test("Should respond with 404 if the natural person does not exist", async () => {
+        const response = await request(server)
+            .put("/api/v1/updateNaturalPerson")
+            .send({
+                id_natural_person: 999,
+                cell_phone: "+34987654321",
+                birthday: "2023-01-01T12:00:00.000Z",
+                usa_citizen: false,
+                id_country_residence: 2,
+                id_country_nationality: 2,
+                id_gender: 2,
+                id_civil_status: 2
+            })
+            
+        expect(response.statusCode).toBe(404);
+        expect(response.body).toHaveProperty('error', 'The natural person does not exist');    
+    });
+
+    test("Should respond 400 if no fields are sent to update", async () => {
+        const response = await request(server)
+            .put("/api/v1/updateNaturalPerson")
+            .send({
+                id_natural_person: 1,
+            })
+
+        expect(response.statusCode).toBe(400);
+        expect(response.body).toHaveProperty('error', 'At least one field must be provided for the update of the natural person.');    
+    });
+
+});
+
 afterAll(() => {
     server.close();
 });
