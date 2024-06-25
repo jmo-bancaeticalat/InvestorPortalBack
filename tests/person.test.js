@@ -1,34 +1,17 @@
 const server = require('../index.js');
 const request = require('supertest'); 
-
+const { PrismaClient } = require('@prisma/client');
 
 // Mockear PrismaClient para evitar el acceso a la base de datos real
 jest.mock('@prisma/client', () => {
-    const mockPrismaClient = {
-        user: {
-            findUnique: jest.fn(),
-        },
-        natural_Person: {
-            findUnique: jest.fn(),
-            findFirst: jest.fn(),
-            create: jest.fn(),
-            update: jest.fn(),
-        },
-        legal_Person: {
-            findUnique: jest.fn(),
-            update: jest.fn(),
-            create: jest.fn(),
-        },
-        relationship_Natural_Legal: {
-            findFirst: jest.fn(),
-            create: jest.fn(),
-        },
-    };
+
+    const { mockPrismaClient } = require('../utils/moks.js');
+    
     return { PrismaClient: jest.fn(() => mockPrismaClient) };
 });
 
-const { PrismaClient } = require('@prisma/client');
 const prismaMock = new PrismaClient();
+
 
 describe("POST /api/v1/postRelationshipNaturalLegal", () => {
 
