@@ -6,8 +6,8 @@ const bcrypt = require('bcryptjs');
 const { Person } = require('../models/Person.js');
 const { Country } = require('../models/Country.js');
 
-const { sendMailUniquePortal, generateToken } = require('../controllers/mail.controller.js');
-const { assign } = require("nodemailer/lib/shared/index.js");
+// const { sendMailUniquePortal, generateToken } = require('../controllers/mail.controller.js');
+// const { assign } = require("nodemailer/lib/shared/index.js");
 
 // Variables principales
 const prisma = new PrismaClient();
@@ -25,25 +25,6 @@ const {
 //todo: Crear endopoint que reciba el usuario y mostrar los intrumentos disponibles habilitados para el pais del usuario.
 
 //* ---------------- PERSONS CONTROLLERS ----------------------- *\\
-
-// Deleting relationship for testing
-const testDeletRelationship = async () => {
-  await prisma.relationship_Natural_Legal.deleteMany({
-    where: {
-      id_natural_person: 1,
-      id_legal_person: 1,
-    },
-  });
-}
-
-// Deleting legal person for testing
-const testDeletLegalPerson = async () => {
-  await prisma.legal_Person.deleteMany({
-    where: {
-      company_creation_date: '2024-01-01T00:00:00.000Z'
-    },
-  });
-}
 
 // Creates a relationship between a natural person and a legal entity in the database.
 const postRelationshipNaturalLegal = async (req, res) => {
@@ -124,7 +105,6 @@ const postRelationshipNaturalLegal = async (req, res) => {
   }
 };
 
-
 // Updates the data of a legal entity in the database.
 const putLegalPerson = async (req, res) => {
   try {
@@ -183,7 +163,6 @@ const putLegalPerson = async (req, res) => {
   }
 };
 
-
 // Creates a new legal entity in the database.
 const postLegalPerson = async (req, res) => {
   try {
@@ -216,7 +195,6 @@ const postLegalPerson = async (req, res) => {
     return res.status(500).json({ error: 'Server error' });
   }
 };
-
 
 // Updates the data of a natural person in the database.
 const updateNaturalPerson = async (req, res) => {
@@ -369,7 +347,6 @@ const getNaturalPersonPostgres = async (req, res) => {
   }
 };
 
-
 // Creates a new natural person in the PostgreSQL database. 
 const postNaturalPersonPostgres = async (req, res) => {
   try {
@@ -437,7 +414,6 @@ const postNaturalPersonPostgres = async (req, res) => {
     if (existingNaturalPerson) {
       return res.status(400).json({ error: 'The user already has an assigned natural person' });
     }
-
 
     // Creates a new natural person in the database.
     const createdNaturalPerson = await prisma.natural_Person.create({
@@ -1821,8 +1797,6 @@ function random(min, max) {
 
 // Exportaciones
 module.exports = {
-  testDeletRelationship,
-  testDeletLegalPerson,
   putLegalPerson,
   postLegalPerson,
   updateNaturalPerson,

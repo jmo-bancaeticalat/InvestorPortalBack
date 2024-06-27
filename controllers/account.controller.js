@@ -7,30 +7,6 @@ const {
     validateBoolean,
  } = require('../utils/validation')
 
- // Deleting tax resindecy for testing
-const clearTaxResidency = async () => {
-    await prisma.country_Tax_Residence.deleteMany({
-      where: {
-        id_investment_account_natural: 8,
-      },
-    });
-};
-
-// Geting if_pep from account for testing 
-const statusAccount = async () => {
-    const account = await prisma.investment_Account_Natural.findFirst({
-        where: {
-            id_investment_account_natural: 8,
-        },
-        select: {
-            if_pep: true,
-            if_AML: true,
-            if_qualified_investor: true,
-        }
-    });
-    return account
-};
-
 
 // Obtains the tax residency of a user according to their investment account.
 const getTaxResidency = async (req, res) => {
@@ -694,8 +670,6 @@ const getInvestmentAccountNaturalPostgres = async (req, res) => {
 };
 
 module.exports = {
-    clearTaxResidency,
-    statusAccount,
     getTaxResidency,
     postTaxResidency,
     postPEP,
