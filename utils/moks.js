@@ -4,6 +4,7 @@ const mockPrismaClient = {
   },
   country: {
     findUnique: jest.fn(),
+    findMany: jest.fn(),
   },
   natural_Person: {
     findUnique: jest.fn(),
@@ -38,6 +39,15 @@ const mockPrismaClient = {
   },
   pEP: {
     create: jest.fn(),
+  },
+  income_Range: {
+    findMany: jest.fn(),
+  },
+  occupation: {
+    findMany: jest.fn(),
+  },
+  educational_Level: {
+    findMany: jest.fn(),
   },
 };  
 
