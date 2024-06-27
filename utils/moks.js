@@ -2,6 +2,9 @@ const mockPrismaClient = {
   user: {
     findUnique: jest.fn(),
   },
+  profile: {
+    findMany: jest.fn(),
+  },
   country: {
     findUnique: jest.fn(),
     findMany: jest.fn(),
@@ -54,13 +57,16 @@ const mockPrismaClient = {
     findUnique: jest.fn(),
     create: jest.fn(),
     update: jest.fn(),
-},
+  },
   document_Type: {
     findFirst: jest.fn(),
-},
+  },
 };  
+
+const mockJwtVerify = jest.fn();
 
 
 module.exports = {
   mockPrismaClient,
+  mockJwtVerify,
 };
