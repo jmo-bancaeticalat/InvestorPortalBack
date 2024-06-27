@@ -61,6 +61,29 @@ const mockPrismaClient = {
   document_Type: {
     findFirst: jest.fn(),
   },
+  scales: {
+    findFirst: jest.fn(),
+    findMany: jest.fn(),
+    create: jest.fn()
+  },
+  risk_Profile: {
+    findFirst: jest.fn(),
+    findMany: jest.fn(),
+    create: jest.fn(),
+    update: jest.fn(),
+  },
+  risk_Profile_Question_Selection: {
+    findMany: jest.fn(),
+    count: jest.fn(),
+    create: jest.fn(),
+  },
+  responses_Risk_Profile: {
+    findUnique: jest.fn(),
+    findMany: jest.fn(),
+  },
+  risk_Profile_Questions: {
+    findMany: jest.fn(),
+  }
 };  
 
 const mockJwtVerify = jest.fn();
