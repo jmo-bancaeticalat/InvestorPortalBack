@@ -49,6 +49,15 @@ const mockPrismaClient = {
   educational_Level: {
     findMany: jest.fn(),
   },
+  images_Documents: {
+    findMany: jest.fn(),
+    findUnique: jest.fn(),
+    create: jest.fn(),
+    update: jest.fn(),
+},
+  document_Type: {
+    findFirst: jest.fn(),
+},
 };  
 
 
