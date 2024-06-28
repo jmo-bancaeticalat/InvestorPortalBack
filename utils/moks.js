@@ -1,6 +1,10 @@
 const mockPrismaClient = {
   user: {
     findUnique: jest.fn(),
+    findFirst: jest.fn(),
+    findMany: jest.fn(),
+    update: jest.fn(),
+    create: jest.fn(),
   },
   profile: {
     findMany: jest.fn(),
