@@ -5,7 +5,7 @@ const { PrismaClient } = require('@prisma/client');
 // Mockear PrismaClient para evitar el acceso a la base de datos real
 jest.mock('@prisma/client', () => {
 
-    const { mockPrismaClient } = require('../utils/moks.js');
+    const { mockPrismaClient } = require('../utils/mocks.js');
     
     return { PrismaClient: jest.fn(() => mockPrismaClient) };
 });

@@ -7,7 +7,7 @@ const { body } = require('express-validator');
 // Mock PrismaClient to avoid access to the real database
 jest.mock('@prisma/client', () => {
 
-    const { mockPrismaClient } = require('../utils/moks.js');
+    const { mockPrismaClient } = require('../utils/mocks.js');
     
     return { PrismaClient: jest.fn(() => mockPrismaClient) };
 });

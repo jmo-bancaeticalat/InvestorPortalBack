@@ -58,8 +58,8 @@ const sendEmail = async (email, subject, text) => {
     };
 
     try {
-        const result = await mailTransporter.sendMail(mailDetails);
-        console.log('Email sent successfully', result);
+        await mailTransporter.sendMail(mailDetails);
+        console.log('Email sent successfully');
     } catch (error) {
         console.error('Error sending email', error);
         throw error;
