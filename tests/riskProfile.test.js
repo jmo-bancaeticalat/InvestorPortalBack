@@ -10,95 +10,102 @@ jest.mock('@prisma/client', () => {
     return { PrismaClient: jest.fn(() => mockPrismaClient) };
 });
 
+
 const prismaMock = new PrismaClient();
 
-// describe("POST /api/v1/UpdateRiskProfileScale", () => {
 
-//   beforeEach(() => {
-//       jest.clearAllMocks();
-//   });
+describe("PUT /api/v1/UpdateRiskProfileScale", () => {
+    beforeEach(() => {
+        jest.clearAllMocks();
+    });
 
-//   test("Should respond with 200 and update the risk profile scales", async () => {
-//     const existingRiskProfile = {
-//         id_risk_profile: 1,
-//         id_investment_account_natural: 1,
-//         id_scales: 2,
-//     };
-//     prismaMock.investment_Account_Natural.findUnique.mockResolvedValueOnce({ id_investment_account_natural: 1 });
-//     prismaMock.scales.findFirst.mockResolvedValueOnce({ id_scales: 1 });
-//     prismaMock.risk_Profile.findFirst.mockResolvedValueOnce(existingRiskProfile);
-//     prismaMock.risk_Profile.update.mockResolvedValueOnce(existingRiskProfile);
+    test("Should respond with 200 and update the risk profile scale", async () => {
+        // Mock data
+        const mockUpdatedRiskProfile = {
+            id_risk_profile: 1,
+            id_scales: 1,
+            id_investment_account_natural: 1,
+            total_score: 20, // Assuming total_score remains the same in the update
+        };
 
-//     const response = await request(server)
-//         .post("/api/v1/UpdateRiskProfileScale")
-//         .send({ id_investment_account_natural: 1, id_scales: 1 });
+        // Mock responses from Prisma
+        prismaMock.investment_Account_Natural.findUnique.mockResolvedValueOnce({ id_investment_account_natural: 1 });
+        prismaMock.scales.findFirst.mockResolvedValueOnce({ id_scales: 1 });
+        prismaMock.risk_Profile.findFirst.mockResolvedValueOnce({
+            id_risk_profile: 1,
+            id_scales: 2, // Assuming the initial scales ID is different
+            id_investment_account_natural: 1,
+            total_score: 20,
+        });
 
-//     console.log(response.error.message)
+        prismaMock.risk_Profile.update.mockResolvedValueOnce(mockUpdatedRiskProfile);
 
-//     expect(response.statusCode).toBe(200);
-//     expect(response.body).toHaveProperty("ok", true);
-//     expect(response.body).toHaveProperty("updatedRiskProfile");
-//     expect(response.body.updatedRiskProfile).toEqual(existingRiskProfile);
-//   });
+        // Send request to the server
+        const response = await request(server)
+            .put("/api/v1/UpdateRiskProfileScale")
+            .send({ id_investment_account_natural: 1, id_scales: 1 });
 
-//   test("Should respond with 200 and a message that the risk profile scale is already up to date", async () => {
-//     const id_investment_account_natural = 1;
-//     const id_scales = 1;
-//     const existingRiskProfile = {
-//         id_risk_profile: 1,
-//         id_investment_account_natural: id_investment_account_natural,
-//         id_scales: id_scales,
-//     };
+        // Assertions
+        expect(response.statusCode).toBe(200);
+        expect(response.body).toEqual({ ok: true, updatedRiskProfile: mockUpdatedRiskProfile });
+    });
 
-//     prismaMock.investment_Account_Natural.findUnique.mockResolvedValueOnce({ id_investment_account_natural });
-//     prismaMock.scales.findFirst.mockResolvedValueOnce({ id_scales });
-//     prismaMock.risk_Profile.findFirst.mockResolvedValueOnce(existingRiskProfile);
+    test("Should respond with 404 if investment account does not exist", async () => {
+        prismaMock.investment_Account_Natural.findUnique.mockResolvedValueOnce(null);
 
-//     const response = await request(server)
-//         .post("/api/v1/UpdateRiskProfileScale")
-//         .send({ id_investment_account_natural, id_scales });
+        const response = await request(server)
+            .put("/api/v1/UpdateRiskProfileScale")
+            .send({ id_investment_account_natural: 1, id_scales: 1 });
 
-//     expect(response.statusCode).toBe(200);
-//     expect(response.body).toHaveProperty("ok", true);
-//     expect(response.body).toHaveProperty("message", "The risk profile scale is already up to date.");
-//   });
+        expect(response.statusCode).toBe(404);
+        expect(response.body).toEqual({ error: 'Investment account does not exist' });
+    });
 
-//   test("Should respond with 404 if investment account does not exist", async () => {
-//     prismaMock.investment_Account_Natural.findUnique.mockResolvedValueOnce(null);
+    test("Should respond with 404 if scales ID does not exist", async () => {
+        prismaMock.investment_Account_Natural.findUnique.mockResolvedValueOnce({ id_investment_account_natural: 1 });
+        prismaMock.scales.findFirst.mockResolvedValueOnce(null);
 
-//     const response = await request(server)
-//         .post("/api/v1/UpdateRiskProfileScale")
-//         .send({ id_investment_account_natural: 1, id_scales: 1 });
+        const response = await request(server)
+            .put("/api/v1/UpdateRiskProfileScale")
+            .send({ id_investment_account_natural: 1, id_scales: 1 });
 
-//     expect(response.statusCode).toBe(404);
-//     expect(response.body).toHaveProperty("error", "Investment account does not exist");
-//   });
+        expect(response.statusCode).toBe(404);
+        expect(response.body).toEqual({ error: 'Scales ID does not exist' });
+    });
 
-//   test("Should respond with 404 if scales ID does not exist", async () => {
-//       prismaMock.investment_Account_Natural.findUnique.mockResolvedValueOnce({ id_investment_account_natural: 1 });
-//       prismaMock.scales.findFirst.mockResolvedValueOnce(null);
+    test("Should respond with 404 if no risk profile found for the provided investment account natural", async () => {
+        prismaMock.investment_Account_Natural.findUnique.mockResolvedValueOnce({ id_investment_account_natural: 1 });
+        prismaMock.scales.findFirst.mockResolvedValueOnce({ id_scales: 1 });
+        prismaMock.risk_Profile.findFirst.mockResolvedValueOnce(null);
 
-//       const response = await request(server)
-//           .post("/api/v1/UpdateRiskProfileScale")
-//           .send({ id_investment_account_natural: 1, id_scales: 1 });
+        const response = await request(server)
+            .put("/api/v1/UpdateRiskProfileScale")
+            .send({ id_investment_account_natural: 1, id_scales: 1 });
 
-//       expect(response.statusCode).toBe(404);
-//       expect(response.body).toHaveProperty("error", "Scales ID does not exist");
-//   });
+        expect(response.statusCode).toBe(404);
+        expect(response.body).toEqual({ error: 'No risk profile found with the provided investment account natural.' });
+    });
 
-//   test("Should respond with 404 if no risk profile found for the investment account", async () => {
-//       prismaMock.investment_Account_Natural.findUnique.mockResolvedValueOnce({ id_investment_account_natural: 1 });
-//       prismaMock.scales.findFirst.mockResolvedValueOnce({ id_scales: 1 });
-//       prismaMock.risk_Profile.findFirst.mockResolvedValueOnce(null);
+    test("Should respond with 200 and message 'The risk profile scale is already up to date.' if scales ID is the same", async () => {
+        const existingRiskProfile = {
+            id_risk_profile: 1,
+            id_scales: 1,
+            id_investment_account_natural: 1,
+            total_score: 20,
+        };
 
-//       const response = await request(server)
-//           .post("/api/v1/UpdateRiskProfileScale")
-//           .send({ id_investment_account_natural: 1, id_scales: 1 });
+        prismaMock.investment_Account_Natural.findUnique.mockResolvedValueOnce({ id_investment_account_natural: 1 });
+        prismaMock.scales.findFirst.mockResolvedValueOnce({ id_scales: 1 });
+        prismaMock.risk_Profile.findFirst.mockResolvedValueOnce(existingRiskProfile);
 
-//       expect(response.statusCode).toBe(404);
-//       expect(response.body).toHaveProperty("error", "No risk profile found with the provided investment account natural.");
-//   });
-// });
+        const response = await request(server)
+            .put("/api/v1/UpdateRiskProfileScale")
+            .send({ id_investment_account_natural: 1, id_scales: 1 });
+
+        expect(response.statusCode).toBe(200);
+        expect(response.body).toEqual({ ok: true, message: 'The risk profile scale is already up to date.' });
+    });
+});
 
 describe("GET /api/v1/getRiskProfile", () => {
 
@@ -151,32 +158,53 @@ describe("POST /api/v1/postRiskProfileForAccount", () => {
 
     beforeEach(() => {
         jest.clearAllMocks();
+
     });
 
-    // test("Should respond with 200 and return created risk profile", async () => {
-    //     const mockRequestBody = { id_investment_account_natural: 1 };
-    
-    //     prismaMock.investment_Account_Natural.findUnique.mockResolvedValueOnce({ id_investment_account_natural: 1 });
-    //     prismaMock.risk_Profile.findFirst.mockResolvedValueOnce(null); // No existing risk profile
-    //     prismaMock.risk_Profile_Question_Selection.create.mockResolvedValueOnce([
-    //         { id_risk_profile_question_selection: 1, id_investment_account_natural: 1, id_responses_risk_profile: 1 },
-    //         { id_risk_profile_question_selection: 2, id_investment_account_natural: 1, id_responses_risk_profile: 6 },
-    //         { id_risk_profile_question_selection: 3, id_investment_account_natural: 1, id_responses_risk_profile: 10 },
-    //         { id_risk_profile_question_selection: 4, id_investment_account_natural: 1, id_responses_risk_profile: 15 },
-    //         { id_risk_profile_question_selection: 5, id_investment_account_natural: 1, id_responses_risk_profile: 19 },
-    //         { id_risk_profile_question_selection: 6, id_investment_account_natural: 1, id_responses_risk_profile: 24 }
-    //     ]);
-    
-    //     const response = await request(server)
-    //         .post("/api/v1/postRiskProfileForAccount")
-    //         .send(mockRequestBody);
+    test("Should respond with 200 and create the risk profile successfully", async () => {
+    // Configuración de mocks para las consultas de Prisma
+    prismaMock.investment_Account_Natural.findUnique.mockResolvedValue({
+        id_investment_account_natural: 1,
+    });
 
-    //     console.log(response.body)
-            
-    //     expect(response.statusCode).toBe(200);
-    //     expect(response.body).toHaveProperty("ok", true);
-    //     expect(response.body).toHaveProperty("createdRiskProfile");
-    // });
+    prismaMock.risk_Profile.findFirst.mockResolvedValue(null);
+    
+    prismaMock.risk_Profile_Question_Selection.count.mockResolvedValue(6);
+
+    prismaMock.scales.findMany.mockResolvedValue([
+        {id_scales: 1, min_value: 1, max_value: 12},
+        {id_scales: 2, min_value: 13, max_value: 20}
+    ])
+
+    prismaMock.risk_Profile_Question_Selection.findMany.mockResolvedValue([
+      { id_investment_account_natural: 1, id_responses_risk_profile: 2 },
+      { id_investment_account_natural: 1, id_responses_risk_profile: 6 },
+      { id_investment_account_natural: 1, id_responses_risk_profile: 10 },
+      { id_investment_account_natural: 1, id_responses_risk_profile: 14 },
+      { id_investment_account_natural: 1, id_responses_risk_profile: 18 },
+      { id_investment_account_natural: 1, id_responses_risk_profile: 23 },
+    ]);
+
+    prismaMock.responses_Risk_Profile.findMany.mockResolvedValue([
+      { id_responses_risk_profile: 2, associated_response_score: 3 },
+      { id_responses_risk_profile: 6, associated_response_score: 3 },
+      { id_responses_risk_profile: 10, associated_response_score: 3 },
+      { id_responses_risk_profile: 14, associated_response_score: 3 },
+      { id_responses_risk_profile: 18, associated_response_score: 3 },
+      { id_responses_risk_profile: 23, associated_response_score: 5 },
+    ]);
+
+    prismaMock.risk_Profile.create.mockResolvedValue({ id_risk_profile: 1, total_score: 10, id_scales: 1 });
+
+    // Realización de la solicitud HTTP POST
+    const response = await request(server)
+      .post('/api/v1/postRiskProfileForAccount')
+      .send({ id_investment_account_natural: '1' });
+
+    // Assertions
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual({ ok: true, createdRiskProfile: { id_risk_profile: 1, total_score: 10, id_scales: 1 } });
+  });
 
   test("Should respond with 404 if natural investment account does not exist", async () => {
     prismaMock.investment_Account_Natural.findUnique.mockResolvedValueOnce(null);

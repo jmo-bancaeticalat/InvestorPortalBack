@@ -90,10 +90,6 @@ const mockPrismaClient = {
   }
 };  
 
-const mockJwtVerify = jest.fn();
-
-
 module.exports = {
   mockPrismaClient,
-  mockJwtVerify,
 };
