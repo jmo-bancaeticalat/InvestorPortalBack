@@ -110,7 +110,7 @@ const postDocuments = async (req, res) =>{
 
     if (!existingDocumentType) {
       deleteFile(path); // Delete the file if validation fails
-      return res.status(400).json({ error: 'Invalid document type ID' });
+      return res.status(404).json({ error: 'Document type not found' });
     }
 
     // Check if the Investment account  exists in the data base
