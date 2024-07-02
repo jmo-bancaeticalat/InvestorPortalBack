@@ -27,6 +27,7 @@
     "express-validator": "^7.0.1",
     "googleapis": "^89.0.0",
     "gridfs-stream": "^1.1.1",
+    "jest-mock-extended": "^3.0.7",
     "jsonwebtoken": "^9.0.2",
     "keycloak-connect": "^22.0.5",
     "mongoose": "^7.6.8",
@@ -41,6 +42,7 @@
   },
   "devDependencies": {
     "jest": "^29.7.0",
+    "mock-fs": "^5.2.0",
     "prisma": "^5.9.1"
   },
   "jest": {
