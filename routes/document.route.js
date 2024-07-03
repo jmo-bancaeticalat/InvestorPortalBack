@@ -16,7 +16,7 @@ const {
 // Routes for uploading documents
 router.post('/postDocuments', upload.single('file') ,postDocuments);
 router.get('/getDocumentByIDaccount', getDocumentByIdAccount);
-router.put('/putDocument', putDocument);
+router.put('/putDocument',upload.single('file'), putDocument);
 
 
 module.exports = router;

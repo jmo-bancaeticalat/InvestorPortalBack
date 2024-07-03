@@ -152,29 +152,33 @@ describe("GET /api/v1/getDocumentByIdAccount", () => {
 });
 
 
-describe("POST /api/v1/putDocument", () => {
+describe("PUT /api/v1/putDocument", () => {
 
     beforeEach(() => {
         // Clear all instances and calls to constructor and all methods:
         jest.clearAllMocks();
     });
 
-    // test("Should respond with 200 and update the document", async () => {
+    test("Should respond with 200 and update the document", async () => {
+
+        prismaMock.images_Documents.findUnique.mockResolvedValue({
+            id_images_documents: 1,
+            id_investment_account_natural: 1,
+            img_link: '/path/to/file.pdf',
+            img_name: 'file.pdf',
+            img_description: 'test description',
+            id_document_type: 1
+        })
+
+        const response = await request(server)
+            .put("/api/v1/putDocument")
+            .field('id_images_documents', '1')
+            .attach('file', Buffer.from('file content'), 'file.pdf');
         
-    //     prismaMock.document_Type.findUnique.mockResolvedValue({ id_document_type: 1 });
+        expect(response.statusCode).toBe(200);
+        expect(response.body.ok).toBe(true);
 
-    //     const response = await request(server)
-    //         .put('/api/documents')
-    //         .field('id_images_documents', '1') 
-    //         .attach('file', Buffer.from('file content'), 'file.pdf'); // Reemplaza con la ruta correcta
-
-    //     console.log(response.body)
-    //     console.log(response.error)
-    
-    //     expect(response.status).toBe(200);
-    //     expect(response.body.ok).toBe(true);
-    //     expect(response.body.updatedDocument).toBeDefined();
-    // });
+    });
 
 
     test("Should respond with 404 if the document does not exist", async () => {

@@ -70,8 +70,6 @@ const postDocuments = async (req, res) =>{
     const { filename, path } = req.file;
     const { id_investment_account_natural, description, id_document_type  } = req.body;
 
-
-
     // Check if a valid id_investment_account_natural is provided
     if(!id_investment_account_natural){
       deleteFile(path); // Delete the file if validation fails
@@ -191,7 +189,6 @@ const getDocumentByIdAccount = async (req, res) => {
   }
 }
 
-//! Falta hacer la prueba de solicitud
 //* Updates an existing document in the system. Returns the updated document in JSON format.
 const putDocument = async (req, res) => {
   const { id_images_documents } = req.body;
@@ -205,7 +202,7 @@ const putDocument = async (req, res) => {
     // Search for the existing document by ID
     const existingDocument = await prisma.images_Documents.findUnique({
       where: {
-        id_images_documents: id_images_documents,
+        id_images_documents: parseInt(id_images_documents),
       },
     });
 
@@ -225,7 +222,7 @@ const putDocument = async (req, res) => {
     // Update the document in the database
     const updatedDocument = await prisma.images_Documents.update({
       where: {
-        id_images_documents: id_images_documents,
+        id_images_documents: parseInt(id_images_documents),
       },
       data: {
         img_link: path,

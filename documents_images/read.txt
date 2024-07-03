@@ -1,0 +1,3 @@
+This folder is created to store the documents for document.controler
+
+It should be deleted when connecting to the database and making changes to the respective controllers

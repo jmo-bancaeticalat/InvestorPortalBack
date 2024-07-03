@@ -64,6 +64,7 @@ const mockPrismaClient = {
   },
   document_Type: {
     findFirst: jest.fn(),
+    findUnique: jest.fn()
   },
   scales: {
     findFirst: jest.fn(),
