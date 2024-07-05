@@ -144,42 +144,38 @@ const postLoginUserPostgres = async (req, res) => {
 
 
 // Creates a new user in the PostgreSQL database.
-const postUserPostgres = async (req, res) => {
-
+const postUserPostgres = async (email, password, terms_and_conditions) => {
   try {
-    const { email, password, terms_and_conditions } = req.body;
-
-    //* administrator as default profile
     const adminUser = 2;
 
     // Check if email is provided
     if (!email) {
-      return res.status(400).json({ error: 'Email is required' });
+      throw new Error('Email is required');
     }
 
     // Check if password is provided
     if (!password) {
-      return res.status(400).json({ error: 'Password is required' });
+      throw new Error('Password is required');
     }
 
     // Check if terms and conditions are accepted
     if (!terms_and_conditions) {
-      return res.status(400).json({ error: 'Accepting the terms and conditions is required' });
+      throw new Error('Accepting the terms and conditions is required');
     }
 
     if (!validateEmail(email)) {
-      return res.status(400).json({ error: 'Invalid email' });
+      throw new Error('Invalid email');
     }
 
     if (!validateBoolean(terms_and_conditions)) {
-      return res.status(400).json({ error: 'Invalid terms and conditions' });
+      throw new Error('Invalid terms and conditions');
     }
-  
+
     // Validate new password format
     const passwordError = validatePassword(password);
 
     if (passwordError) {
-      return res.status(400).json({ error: passwordError });
+      throw new Error(passwordError);
     }
 
     // Check if a user with the given email already exists
@@ -191,7 +187,7 @@ const postUserPostgres = async (req, res) => {
 
     // If user exists, return an error
     if (existingUser.length !== 0) {
-      return res.status(400).json({ error: 'There is already a user created with this email' });
+      throw new Error('There is already a user created with this email');
     }
 
     // Hash the password
@@ -210,15 +206,16 @@ const postUserPostgres = async (req, res) => {
       },
     });
 
-    // Return success response with the created user
-    return res.status(201).json({ ok: true, createdUser });
+    // Return the created user
+    return createdUser;
 
   } catch (error) {
-    // Handle errors, print to console, and return a server error.
+    // Handle errors, print to console, and throw the error.
     console.log(error);
-    return res.status(500).json({ error: "Server error" });
+    throw error;
   }
 };
+
 
 
 // Retrieves information of users with their associated profiles filtered by an ID.

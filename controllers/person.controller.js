@@ -348,47 +348,39 @@ const getNaturalPersonPostgres = async (req, res) => {
 };
 
 // Creates a new natural person in the PostgreSQL database. 
-const postNaturalPersonPostgres = async (req, res) => {
+const postNaturalPersonPostgres = async (name, lastname, id_user) => {
   try {
-
     // Default ID for relationships that are not provided.
     const defaultId = 0;
 
-    // Extracts fields from the request body.
-    const { 
-      name,
-      lastname,
-      id_user,
-    } = req.body;
-
     // Checks if the name of the natural person is provided.
     if (!name) {
-      return res.status(400).json({ error: 'The name of the natural person is missing'})
+      throw new Error('The name of the natural person is missing');
     }
 
     // Checks if the lastname of the natural person is provided.
     if (!lastname) {
-      return res.status(400).json({ error: 'The lastname of the natural person is missing'})
+      throw new Error('The lastname of the natural person is missing');
     }
 
     // Checks if the user ID is provided.
     if (!id_user) {
-      return res.status(400).json({ error: 'The ID of the user is missing'})
+      throw new Error('The ID of the user is missing');
     }
 
     // Validates the format of the name.
     if (!validateAlphabetic(name)) {
-      return res.status(400).json({ error: 'The name of the natural person has an invalid format' })
+      throw new Error('The name of the natural person has an invalid format');
     }
 
     // Validates the format of the lastname.
     if (!validateAlphabetic(lastname)) {
-      return res.status(400).json({ error: 'The lastname of the natural person has an invalid format' })
+      throw new Error('The lastname of the natural person has an invalid format');
     }
 
     // Validates the format of the user ID.
     if (!validateNumeric(id_user)) {
-      return res.status(400).json({ error: 'The ID of the user has an invalid format' })
+      throw new Error('The ID of the user has an invalid format');
     }
 
     // Checks if the user exists in the database.
@@ -396,15 +388,15 @@ const postNaturalPersonPostgres = async (req, res) => {
       where: {
         id_user: parseInt(id_user)
       }
-    })
+    });
 
     // If the user does not exist, returns a 404 error.
     if (!existingUser) {
-      return res.status(404).json({ error: 'The user does not exist' })
+      throw new Error('The user does not exist');
     }
 
     // Checks if the user already has an assigned natural person.
-    const existingNaturalPerson = await prisma.natural_Person.findFirst ({
+    const existingNaturalPerson = await prisma.natural_Person.findFirst({
       where: {
         id_user: parseInt(id_user)
       }
@@ -412,7 +404,7 @@ const postNaturalPersonPostgres = async (req, res) => {
 
     // If the user already has a natural person, returns a 400 error.
     if (existingNaturalPerson) {
-      return res.status(400).json({ error: 'The user already has an assigned natural person' });
+      throw new Error('The user already has an assigned natural person');
     }
 
     // Creates a new natural person in the database.
@@ -438,15 +430,16 @@ const postNaturalPersonPostgres = async (req, res) => {
       }
     });
 
-    // Returns a success response with the created natural person data.
-    res.status(201).json(createdNaturalPerson);
+    // Return the created natural person data.
+    return createdNaturalPerson;
 
   } catch (error) {
-    // Handle errors, print to console, and return a server error.
+    // Handle errors, print to console, and throw the error.
     console.log(error);
-    return res.status(500).json({ error: "Error de servidor" });
+    throw error;
   }
 };
+
 
 
 //* ---------------- END PERSONS CONTROLLERS ----------------------- *\\

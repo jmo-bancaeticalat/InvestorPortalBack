@@ -537,97 +537,76 @@ const postInvestmentAccountLegal = async (req, res) => {
 };
 
 // Creates a new natural investment account in the system.
-const postInvestmentAccountNatural = async (req, res) => {
+const postInvestmentAccountNatural = async (id_natural_person, identifier_national_number) => {
     try {
-        const {
-            id_natural_person,
-            identifier_national_number,
-            // identifier_tax_number,
-            // id_country_account,
-            // id_educational_level,
-            // passaport,
-            // id_occupation,
-            // id_income_range,
-            // if_qualified_investor,
-            // if_pep,
-            // id_pep,
-            // id_risk_profile,
-            // if_CRS, 
-        } = req.body;
-
-        // Default ID for optional auxiliar tables 
-        const defaultId = 0;    
-
-        // Check if id_natural_person is missing in the request
-        if (!id_natural_person) {
-            return res.status(400).json({ error: 'Missing natural person ID' });
-        }
-
-        if (!identifier_national_number) {
-            return res.status(400).json({ error: 'Missing identifier national number'})
-        }
-        
-        // Check if the ID of the natural person has a valid format (only digits) and is not NaN.
-        if (!validateNumeric(id_natural_person)) {
-            return res.status(400).json({ error: "Invalid natural person ID format" });
-        }
-        
-        // Validate identifier_national_number format (digits and hyphens only)
-        if (!/^[\d-]+$/.test(identifier_national_number)) {
-            return res.status(400).json({ error: "Invalid national identifier number format. It must contain only digits and hyphens." });
-        }
-
-        // Validate if the length of the identifier_national_number is between 9 and 11 characters
-        if (identifier_national_number.length < 9 || identifier_national_number.length > 11) {
-            return res.status(400).json({ error: "National identifier number must be between 9 and 11 characters long." });
-        }
-
-        // Validate the position of the hyphen in identifier_national_number
-        if (!/^\d{7,9}-\d$/.test(identifier_national_number)) {
-            return res.status(400).json({ error: "Invalid national identifier number format. It must have a hyphen in the penultimate position and end with a digit." });
-        }
-
-        // Check if the natural person exists in the database
-        const existingNaturalPerson = await prisma.natural_Person.findFirst({
-            where: {
-                id_natural_person: id_natural_person,
-            },
-        });
-
-        // Return an error if the natural person does not exist
-        if (!existingNaturalPerson) {
-            return res.status(404).json({ error: "The natural person does not exist" });
-        }
-
-        // Create a new investment account for a natural person
-        const createdInvestmentAccountNatural = await prisma.investment_Account_Natural.create({
-            data: {
-                id_natural_person: id_natural_person,
-                identifier_national_number: identifier_national_number,
-                // identifier_tax_number,
-                id_country_account:  defaultId, 
-                id_educational_level:  defaultId,
-                // passaport,
-                id_occupation: defaultId,
-                id_income_range: defaultId,
-                // if_qualified_investor,
-                // if_pep,
-                id_pep: defaultId,
-                // id_risk_profile,
-                // if_CRS,
-            },
-        });
-
-        // Return a success response with the created investment account    
-        return res.status(201).json({ ok: true, createdInvestmentAccountNatural });
-
+      // Default ID for optional auxiliary tables
+      const defaultId = 0;
+  
+      // Check if id_natural_person is missing
+      if (!id_natural_person) {
+        throw new Error('Missing natural person ID');
+      }
+  
+      // Check if identifier_national_number is missing
+      if (!identifier_national_number) {
+        throw new Error('Missing identifier national number');
+      }
+  
+      // Check if the ID of the natural person has a valid format (only digits) and is not NaN.
+      if (!validateNumeric(id_natural_person)) {
+        throw new Error('Invalid natural person ID format');
+      }
+  
+      // Validate identifier_national_number format (digits and hyphens only)
+      if (!/^[\d-]+$/.test(identifier_national_number)) {
+        throw new Error('Invalid national identifier number format. It must contain only digits and hyphens.');
+      }
+  
+      // Validate if the length of the identifier_national_number is between 9 and 11 characters
+      if (identifier_national_number.length < 9 || identifier_national_number.length > 11) {
+        throw new Error('National identifier number must be between 9 and 11 characters long.');
+      }
+  
+      // Validate the position of the hyphen in identifier_national_number
+      if (!/^\d{7,9}-\d$/.test(identifier_national_number)) {
+        throw new Error('Invalid national identifier number format. It must have a hyphen in the penultimate position and end with a digit.');
+      }
+  
+      // Check if the natural person exists in the database
+      const existingNaturalPerson = await prisma.natural_Person.findFirst({
+        where: {
+          id_natural_person: id_natural_person,
+        },
+      });
+  
+      // Return an error if the natural person does not exist
+      if (!existingNaturalPerson) {
+        throw new Error('The natural person does not exist');
+      }
+  
+      // Create a new investment account for a natural person
+      const createdInvestmentAccountNatural = await prisma.investment_Account_Natural.create({
+        data: {
+          id_natural_person: id_natural_person,
+          identifier_national_number: identifier_national_number,
+          id_country_account: defaultId,
+          id_educational_level: defaultId,
+          id_occupation: defaultId,
+          id_income_range: defaultId,
+          id_pep: defaultId,
+        },
+      });
+  
+      // Return the created investment account
+      return createdInvestmentAccountNatural;
+  
     } catch (error) {
-
-        // Handle errors, print to console, and return a server error.
-        console.log(error);
-        return res.status(500).json({ error: "Server error" });
+      // Handle errors, print to console, and throw the error.
+      console.log(error);
+      throw error;
     }
-};
+  };
+  
 
 // Obtains information about all natural investment accounts stored in the PostgreSQL database.
 const getInvestmentAccountNaturalPostgres = async (req, res) => {
