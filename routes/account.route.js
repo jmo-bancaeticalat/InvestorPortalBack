@@ -15,10 +15,6 @@ const {
     postPEP,
 } = require('../controllers/account.controller.js')
 
-const {
-    createUser
-} = require('../controllers/synchronousFunctions.controler.js')
-
 
 // Investment account routes
 router.get('/getTaxResidency', getTaxResidency);
@@ -32,8 +28,5 @@ router.post('/postInvestmentAccountLegal', postInvestmentAccountLegal)
 router.post('/postInvestmentAccountNatural', postInvestmentAccountNatural);
 router.get('/getInvestmentAccountNaturalPostgres', getInvestmentAccountNaturalPostgres);
 
-
-
-router.post('/createUser', createUser);
 
 module.exports = router;
