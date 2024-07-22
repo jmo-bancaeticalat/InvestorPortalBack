@@ -9,11 +9,11 @@ const accountRouter = require('./routes/account.route.js');
 const documentRouter = require('./routes/document.route.js');
 const riskProfileRouter = require('./routes/riskProfile.route.js');
 const auxiliarRouter = require('./routes/auxiliar.route.js');
-const synchronousFunctionsRouter = require('./routes/synchronousFunctions.route.js');
 const secureRouter = require('./routes/secure.route.js');
 const cookieParser = require('cookie-parser');
 const cors = require('cors');
 const multer = require('multer');
+
 const { PrismaClient } = require('@prisma/client');
 
 //Swagger
@@ -46,16 +46,16 @@ const prisma = new PrismaClient();
 
 const app = express();
 
-const whiteList = [process.env.ORIGIN1, process.env.ORIGIN2, process.env.ORIGIN3, process.env.ORIGIN4];
+const whiteList = [process.env.ORIGIN1, process.env.ORIGIN2, process.env.ORIGIN3];
 
 app.use(
     cors({
-        origin: function(origin, callback){
-            if(!origin || whiteList.includes(origin)){
-                return callback(null, origin);
-            }
-            return callback("Error de CORS origin: " + origin + "No autorizado!");
-        },
+    origin: function(origin, callback){
+        if(!origin || whiteList.includes(origin)){
+            return callback(null, origin);
+        }
+        return callback("Error de CORS origin: " + origin + "No autorizado!");
+    },
     credentials: true,
 }));
 app.use('/api/v1/doc', swaggerUi.serve, swaggerUi.setup(swaggerJSDoc(options)));
@@ -71,7 +71,6 @@ app.use('/api/v1', accountRouter);
 app.use('/api/v1', documentRouter);
 app.use('/api/v1', riskProfileRouter);
 app.use('/api/v1', auxiliarRouter);
-app.use('/api/v1', synchronousFunctionsRouter);
 
 //Solo para test login
 app.use(express.static('public'));
